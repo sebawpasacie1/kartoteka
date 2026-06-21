@@ -248,7 +248,8 @@
             lucide.createIcons();
         }
 
-        function renderKartoteka() {
+        // 1. Podmień całą funkcję renderKartoteka() na tę wersję:
+function renderKartoteka() {
     const grid = document.getElementById('grid-kartoteka');
     const search = document.getElementById('searchKartoteka').value.toLowerCase();
     grid.innerHTML = "";
@@ -272,13 +273,22 @@
                         <option value="DENAT" ${o.status === 'DENAT' ? 'selected' : ''}>DENAT</option>
                     </select>
                 </div>
-                <div class="bg-slate-900 p-2 rounded text-slate-300 whitespace-pre-line text-[11px] border border-slate-800/50">${o.notatka_tajna || "Brak uwag."}</div>
-                <div class="text-[10px] text-slate-500"><b class="text-slate-400">DOWODY OPERACYJNE:</b><br>${dwTxt}</div>
-                <button onclick="deleteItem('kartoteka', '${o.pesel}')" class="text-red-500/60 hover:text-red-400 flex items-center gap-1 text-[10px] pt-1"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i> USUŃ PROFIL</button>
+                
+                <div class="space-y-1">
+                    <label class="text-[10px] text-slate-500 font-bold">UWAGI OPERACYJNE / NOTATKA:</label>
+                    <textarea id="note-${o.pesel}" rows="2" class="w-full bg-slate-900 p-2 rounded text-slate-300 text-[11px] border border-slate-800 focus:outline-none focus:border-slate-700 resize-none">${o.notatka_tajna || ""}</textarea>
+                    <button onclick="changeNotatka('${o.pesel}')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-0.5 rounded text-[10px] border border-slate-700 transition">ZAPISZ UWAGI</button>
+                </div>
+
+                <div class="text-[10px] text-slate-500 pt-1"><b class="text-slate-400">DOWODY OPERACYJNE:</b><br>${dwTxt}</div>
+                <div class="flex justify-between items-center border-t border-slate-900 pt-2 mt-1">
+                    <button onclick="deleteItem('kartoteka', '${o.pesel}')" class="text-red-500/60 hover:text-red-400 flex items-center gap-1 text-[10px]"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i> USUŃ PROFIL</button>
+                </div>
             </div>`;
     });
     lucide.createIcons();
 }
+
 
 // DODAJ TĘ NOWĄ FUNKCJĘ pod funkcją renderKartoteka():
 async function changeStatus(pesel, nowyStatus) {
@@ -299,6 +309,29 @@ async function changeStatus(pesel, nowyStatus) {
     } catch(e) {
         console.error(e);
         alert("Błąd sieci przy zmianie statusu.");
+    }
+}
+
+// 2. Dodaj tę nową funkcję pod funkcją changeStatus():
+async function changeNotatka(pesel) {
+    const nowaTresc = document.getElementById(`note-${pesel}`).value;
+    try {
+        const res = await fetch(`${API_URL}/kartoteka/${pesel}/notatka`, {
+            method: 'PATCH',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ notatka_tajna: nowaTresc })
+        });
+        const data = await res.json();
+        if(data.error) {
+            alert("Błąd zapisu notatki: " + data.error);
+        } else {
+            // Szybkie powiadomienie na przycisku lub przeładowanie pamięci podręcznej
+            await loadAllData();
+            alert("Uwagi operacyjne zostały pomyślnie zaktualizowane w MongoDB!");
+        }
+    } catch(e) {
+        console.error(e);
+        alert("Błąd sieci przy zapisie uwag.");
     }
 }
 
