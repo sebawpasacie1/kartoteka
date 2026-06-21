@@ -86,6 +86,7 @@
                                 <option value="PODEJRZANY">PODEJRZANY</option>
                                 <option value="POSZUKIWANY">POSZUKIWANY</option>
                                 <option value="ZATRZYMANY (48H)">ZATRZYMANY (48H)</option>
+                                <option value="DENAT">DENAT</option>
                             </select>
                         </div>
                         <div>
@@ -98,8 +99,8 @@
                     <div class="border-t border-slate-800 pt-4 mt-4 space-y-3 text-sm font-mono">
                         <h3 class="text-xs font-bold text-amber-500 flex items-center gap-2"><i data-lucide="paperclip" class="w-3.5 h-3.5"></i> ZABEZPIECZ DOWÓD OPERACYJNY</h3>
                         <input type="text" id="dowod-pesel" placeholder="PESEL Obywatela" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-xs text-slate-200 focus:outline-none">
-                        <input type="text" id="dowod-sygnatura" placeholder="Sygnatura (np. D/2026/01)" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-xs text-slate-200 focus:outline-none">
-                        <input type="text" id="dowod-opis" placeholder="Opis dowodu (np. Zabezpieczona broń)" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-xs text-slate-200 focus:outline-none">
+                        <input type="text" id="dowod-sygnatura" placeholder="Sygnatura (np. DOWOD/2026/01)" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-xs text-slate-200 focus:outline-none">
+                        <input type="text" id="dowod-opis" placeholder="Opis rzeczy..." class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-xs text-slate-200 focus:outline-none">
                         <button onclick="submitDowod()" class="w-full bg-amber-600/20 hover:bg-amber-600/40 text-amber-400 font-bold py-1.5 rounded text-xs border border-amber-600/30 transition">DODAJ DOWÓD</button>
                     </div>
                 </div>
@@ -118,28 +119,23 @@
                 <div class="bg-slate-950 p-5 rounded-xl border border-slate-800 h-fit space-y-3 font-mono text-sm">
                     <h2 class="text-md font-bold text-amber-500 flex items-center gap-2"><i data-lucide="briefcase" class="w-4 h-4"></i> OTÓRZ NOWE POSTĘPOWANIE</h2>
                     <div>
-                        <label class="block text-xs text-slate-400 mb-1">Sygnatura Akt (np. RS-2026-99)</label>
+                        <label class="block text-xs text-slate-400 mb-1">Sygnatura / Nazwa sprawy</label>
                         <input type="text" id="sp-sygnatura" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-slate-200 focus:outline-none">
                     </div>
                     <div>
-                        <label class="block text-xs text-slate-400 mb-1">Tytuł/Sprawa</label>
-                        <input type="text" id="sp-tytul" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-slate-200 focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs text-slate-400 mb-1">Podejrzani (Imiona, Nazwiska/Pseudonimy)</label>
+                        <label class="block text-xs text-slate-400 mb-1">Podejrzani (Osoby/Gangi)</label>
                         <input type="text" id="sp-podejrzani" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-slate-200 focus:outline-none">
                     </div>
                     <div>
-                        <label class="block text-xs text-slate-400 mb-1">Stan Postępowania</label>
+                        <label class="block text-xs text-slate-400 mb-1">Status sprawy</label>
                         <select id="sp-stan" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-slate-200 focus:outline-none">
-                            <option value="W TOKU">W TOKU</option>
-                            <option value="ZAWIESZONE">ZAWIESZONE</option>
-                            <option value="ZAMKNIĘTE">ZAMKNIĘTE</option>
+                            <option value="OTWARTA">OTWARTA</option>
+                            <option value="ZAMKNIĘTE">ZAMKNIĘTA</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs text-slate-400 mb-1">Opis czynu / Szczegóły śledztwa</label>
-                        <textarea id="sp-opis" rows="3" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-slate-200 focus:outline-none text-xs"></textarea>
+                        <label class="block text-xs text-slate-400 mb-1">Opis działań operacyjnych</label>
+                        <textarea id="sp-opis" rows="4" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-slate-200 focus:outline-none text-xs"></textarea>
                     </div>
                     <button onclick="submitSprawa()" class="w-full bg-amber-600 hover:bg-amber-700 font-bold py-2 rounded text-xs transition">ZAREJESTRUJ SPRAWĘ</button>
                 </div>
@@ -150,22 +146,18 @@
         <section id="tab-nakazy" class="tab-content hidden space-y-4">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="bg-slate-950 p-5 rounded-xl border border-slate-800 h-fit space-y-3 font-mono text-sm">
-                    <h2 class="text-md font-bold text-purple-400 flex items-center gap-2"><i data-lucide="file-check" class="w-4 h-4"></i> WYSTAW NAKAZ REWIZJI/PRZESZUKANIA</h2>
+                    <h2 class="text-md font-bold text-purple-400 flex items-center gap-2"><i data-lucide="file-check" class="w-4 h-4"></i> WPROWADŹ NAKAZ PROKURATORSKI</h2>
                     <div>
-                        <label class="block text-xs text-slate-400 mb-1">Numer Nakazu (np. NP/2026/401)</label>
-                        <input type="text" id="nk-numer" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-slate-200 focus:outline-none">
+                        <label class="block text-xs text-slate-400 mb-1">Imię i Nazwisko Prokuratora</label>
+                        <input type="text" id="nk-prokurator" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-slate-200 focus:outline-none">
                     </div>
                     <div>
-                        <label class="block text-xs text-slate-400 mb-1">Cel Nakazu (np. Przeszukanie Lokalu, Zatrzymaie Mienia)</label>
+                        <label class="block text-xs text-slate-400 mb-1">Cel nakazu (Obywatel / Firma)</label>
                         <input type="text" id="nk-cel" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-slate-200 focus:outline-none">
                     </div>
                     <div>
-                        <label class="block text-xs text-slate-400 mb-1">Własność / Lokalizacja docelowa</label>
-                        <input type="text" id="nk-wlasnosc" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-slate-200 focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs text-slate-400 mb-1">Uzasadnienie prawne / Faktyczne</label>
-                        <textarea id="nk-uzasadnienie" rows="3" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-slate-200 focus:outline-none text-xs"></textarea>
+                        <label class="block text-xs text-slate-400 mb-1">Link do nakazu (URL)</label>
+                        <input type="text" id="nk-link" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-slate-200 focus:outline-none">
                     </div>
                     <button onclick="submitNakaz()" class="w-full bg-purple-600 hover:bg-purple-700 font-bold py-2 rounded text-xs transition">ZATWIERDŹ NAKAZ</button>
                 </div>
@@ -186,12 +178,8 @@
                         <input type="text" id="dn-pesel" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-slate-200 focus:outline-none">
                     </div>
                     <div>
-                        <label class="block text-xs text-slate-400 mb-1">Data i Godzina Stwierdzenia</label>
-                        <input type="text" id="dn-data" placeholder="np. 21.06.2026 14:30" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-slate-200 focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs text-slate-400 mb-1">Domniemana przyczyna zgonu / Opis rany</label>
-                        <textarea id="dn-przyczyna" rows="3" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-slate-200 focus:outline-none text-xs"></textarea>
+                        <label class="block text-xs text-slate-400 mb-1">Okoliczności śmierci / Miejsce</label>
+                        <textarea id="dn-opis" rows="4" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-slate-200 focus:outline-none text-xs"></textarea>
                     </div>
                     <button onclick="submitDenat()" class="w-full bg-emerald-600 hover:bg-emerald-700 font-bold py-2 rounded text-xs transition">ZAPISZ W REJESTRZE</button>
                 </div>
@@ -202,9 +190,7 @@
     </main>
 
     <script>
-        // PODMIEŃ NA TWÓJ URL Z RENDERA (z zachowaniem /api na końcu)
         const API_URL = "https://owp-backend.onrender.com/api";
-
         let cache = { kartoteka: [], sprawy: [], nakazy: [], denaci: [] };
 
         async function initSystem() {
@@ -215,7 +201,7 @@
                 document.getElementById('api-status').className = "text-emerald-400 animate-pulse";
             } catch(e) {
                 console.error(e);
-                alert("Błąd połączenia z bazą. Jeśli serwer Render spał, poczekaj chwilę i odśwież stronę.");
+                alert("Błąd synchronizacji. Poczekaj chwilę na rozruch serwera i odśwież stronę.");
             }
         }
 
@@ -262,7 +248,6 @@
             lucide.createIcons();
         }
 
-        // --- RENDEROWANIE ELEMENTÓW ---
         function renderKartoteka() {
             const grid = document.getElementById('grid-kartoteka');
             const search = document.getElementById('searchKartoteka').value.toLowerCase();
@@ -281,7 +266,6 @@
                         <button onclick="deleteItem('kartoteka', '${o.pesel}')" class="text-red-500/60 hover:text-red-400 flex items-center gap-1 text-[10px] pt-1"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i> USUŃ PROFIL</button>
                     </div>`;
             });
-            lucide.createIcons();
         }
 
         function renderSprawy() {
@@ -291,10 +275,9 @@
                     <div class="bg-slate-950 border border-slate-800 rounded-lg p-4 font-mono text-xs space-y-2">
                         <div class="flex justify-between border-b border-slate-900 pb-2">
                             <span class="font-bold text-amber-500 text-sm">${s.sygnatura}</span>
-                            <span class="text-slate-400 font-bold">${s.stan}</span>
+                            <span class="text-slate-400 font-bold">${s.status || 'OTWARTA'}</span>
                         </div>
-                        <p class="text-slate-200 font-bold">${s.tytul}</p>
-                        <p class="text-slate-400 text-[11px]"><b>Podejrzani:</b> ${s.podejrzani || 'Brak'}</p>
+                        <p class="text-slate-400 text-[11px]"><b>Podejrzani:</b> ${s.podejrzani || 'Brak danych'}</p>
                         <p class="text-slate-500 text-[11px] bg-slate-900 p-2 rounded border border-slate-800/50">${s.opis}</p>
                         <button onclick="deleteItem('sprawy', '${s.sygnatura}')" class="text-red-500/60 hover:text-red-400 flex items-center gap-1 text-[10px]"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i> SKUŚ SPRAWĘ (USUŃ)</button>
                     </div>`;
@@ -306,11 +289,10 @@
             cache.nakazy.forEach(n => {
                 grid.innerHTML += `
                     <div class="bg-slate-950 border border-slate-800 rounded-lg p-4 font-mono text-xs space-y-2">
-                        <div class="border-b border-slate-900 pb-2"><span class="font-bold text-purple-400 text-sm">${n.numer}</span></div>
-                        <p class="text-slate-200"><b>Cel:</b> ${n.cel}</p>
-                        <p class="text-slate-300"><b>Lokal/Mienie:</b> ${n.wlasnosc}</p>
-                        <p class="text-slate-500 text-[11px] bg-slate-900 p-2 rounded border border-slate-800/50"><b>Uzasadnienie:</b> ${n.uzasadnienie}</p>
-                        <button onclick="deleteItem('nakazy', '${n.numer}')" class="text-red-500/60 hover:text-red-400 flex items-center gap-1 text-[10px]"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i> WYCOFAJ NAKAZ</button>
+                        <div class="border-b border-slate-900 pb-2"><span class="font-bold text-purple-400 text-sm">Nakaz na: ${n.cel}</span></div>
+                        <p class="text-slate-200"><b>Organ wydający:</b> Prokurator ${n.prokurator}</p>
+                        <p class="text-slate-300"><b>Dokumentacja:</b> <a href="${n.link}" target="_blank" class="text-blue-400 underline">Otwórz załącznik</a></p>
+                        <button onclick="deleteItem('nakazy', '${n.cel}')" class="text-red-500/60 hover:text-red-400 flex items-center gap-1 text-[10px]"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i> WYCOFAJ NAKAZ</button>
                     </div>`;
             });
         }
@@ -320,15 +302,14 @@
             cache.denaci.forEach(d => {
                 grid.innerHTML += `
                     <div class="bg-slate-950 border border-slate-800 rounded-lg p-4 font-mono text-xs space-y-2">
-                        <div class="flex justify-between border-b border-slate-900 pb-2"><span class="font-bold text-emerald-400 text-sm">${d.imie_nazwisko}</span><span class="text-slate-500">${d.data_zgonu}</span></div>
-                        <p class="text-slate-400">PESEL: ${d.pesel}</p>
-                        <p class="text-slate-500 text-[11px] bg-slate-900 p-2 rounded border border-slate-800/50"><b>Opis/Rany:</b> ${d.przyczyna}</p>
+                        <div class="flex justify-between border-b border-slate-900 pb-2"><span class="font-bold text-emerald-400 text-sm">${d.dane}</span></div>
+                        <p class="text-slate-400">PESEL: ${d.pesel || 'BRAK'}</p>
+                        <p class="text-slate-500 text-[11px] bg-slate-900 p-2 rounded border border-slate-800/50"><b>Okoliczności:</b> ${d.opis || 'Brak'}</p>
                         <button onclick="deleteItem('denaci', '${d.pesel}')" class="text-red-500/60 hover:text-red-400 flex items-center gap-1 text-[10px]"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i> USUŃ Z REJESTRU</button>
                     </div>`;
             });
         }
 
-        // --- OBSŁUGA FORMULARZY (ZAPIS / USUNIĘCIE) ---
         async function sendPost(endpoint, body) {
             const res = await fetch(`${API_URL}/${endpoint}`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body) });
             const data = await res.json();
@@ -337,7 +318,7 @@
         }
 
         async function deleteItem(endpoint, identifier) {
-            if(!confirm("Czy na pewno chcesz usunąć ten wpis z bazy danych KWP?")) return;
+            if(!confirm("Czy na pewno chcesz usunąć ten wpis z bazy danych?")) return;
             await fetch(`${API_URL}/${endpoint}/${identifier}`, { method: 'DELETE' });
             await refreshStats(); await loadAllData();
         }
@@ -353,18 +334,18 @@
         }
 
         async function submitSprawa() {
-            const body = { sygnatura: document.getElementById('sp-sygnatura').value, tytul: document.getElementById('sp-tytul').value, podejrzani: document.getElementById('sp-podejrzani').value, stan: document.getElementById('sp-stan').value, opis: document.getElementById('sp-opis').value };
-            if(await sendPost('sprawy', body)) { document.getElementById('sp-sygnatura').value=''; document.getElementById('sp-tytul').value=''; document.getElementById('sp-podejrzani').value=''; document.getElementById('sp-opis').value=''; }
+            const body = { sygnatura: document.getElementById('sp-sygnatura').value, podejrzani: document.getElementById('sp-podejrzani').value, status: document.getElementById('sp-stan').value, opis: document.getElementById('sp-opis').value };
+            if(await sendPost('sprawy', body)) { document.getElementById('sp-sygnatura').value=''; document.getElementById('sp-podejrzani').value=''; document.getElementById('sp-opis').value=''; }
         }
 
         async function submitNakaz() {
-            const body = { numer: document.getElementById('nk-numer').value, cel: document.getElementById('nk-cel').value, wlasnosc: document.getElementById('nk-wlasnosc').value, uzasadnienie: document.getElementById('nk-uzasadnienie').value };
-            if(await sendPost('nakazy', body)) { document.getElementById('nk-numer').value=''; document.getElementById('nk-cel').value=''; document.getElementById('nk-wlasnosc').value=''; document.getElementById('nk-uzasadnienie').value=''; }
+            const body = { prokurator: document.getElementById('nk-prokurator').value, cel: document.getElementById('nk-cel').value, link: document.getElementById('nk-link').value };
+            if(await sendPost('nakazy', body)) { document.getElementById('nk-prokurator').value=''; document.getElementById('nk-cel').value=''; document.getElementById('nk-link').value=''; }
         }
 
         async function submitDenat() {
-            const body = { imie_nazwisko: document.getElementById('dn-nazwisko').value, pesel: document.getElementById('dn-pesel').value, data_zgonu: document.getElementById('dn-data').value, przyczyna: document.getElementById('dn-przyczyna').value };
-            if(await sendPost('denaci', body)) { document.getElementById('dn-nazwisko').value=''; document.getElementById('dn-pesel').value=''; document.getElementById('dn-data').value=''; document.getElementById('dn-przyczyna').value=''; }
+            const body = { dane: document.getElementById('dn-nazwisko').value, pesel: document.getElementById('dn-pesel').value, opis: document.getElementById('dn-opis').value };
+            if(await sendPost('denaci', body)) { document.getElementById('dn-nazwisko').value=''; document.getElementById('dn-pesel').value=''; document.getElementById('dn-opis').value=''; }
         }
     </script>
 </body>
