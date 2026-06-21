@@ -249,24 +249,58 @@
         }
 
         function renderKartoteka() {
-            const grid = document.getElementById('grid-kartoteka');
-            const search = document.getElementById('searchKartoteka').value.toLowerCase();
-            grid.innerHTML = "";
-            cache.kartoteka.filter(o => `${o.imie} ${o.nazwisko} ${o.pesel}`.toLowerCase().includes(search)).forEach(o => {
-                let col = o.status==="POSZUKIWANY"?"text-red-500 border-red-500/30 bg-red-500/5":o.status==="PODEJRZANY"?"text-amber-500 border-amber-500/30 bg-amber-500/5":"text-slate-400 border-slate-800 bg-slate-900/30";
-                let dwTxt = o.dowody && o.dowody.length > 0 ? o.dowody.map(dw => `• [${dw.sygnatura}] ${dw.opis}`).join('<br>') : "Brak zabezpieczonych dowodów.";
-                grid.innerHTML += `
-                    <div class="bg-slate-950 border border-slate-800 rounded-lg p-4 space-y-3 font-mono text-xs">
-                        <div class="flex justify-between items-start border-b border-slate-900 pb-2">
-                            <div><p class="text-sm font-bold text-slate-200">${o.nazwisko} ${o.imie}</p><p class="text-slate-500 text-[11px]">PESEL: ${o.pesel}</p></div>
-                            <span class="px-2 py-0.5 border text-[10px] font-bold rounded ${col}">${o.status}</span>
-                        </div>
-                        <div class="bg-slate-900 p-2 rounded text-slate-300 whitespace-pre-line text-[11px] border border-slate-800/50">${o.notatka_tajna || "Brak uwag."}</div>
-                        <div class="text-[10px] text-slate-500"><b class="text-slate-400">DOWODY OPERACYJNE:</b><br>${dwTxt}</div>
-                        <button onclick="deleteItem('kartoteka', '${o.pesel}')" class="text-red-500/60 hover:text-red-400 flex items-center gap-1 text-[10px] pt-1"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i> USUŃ PROFIL</button>
-                    </div>`;
-            });
+    const grid = document.getElementById('grid-kartoteka');
+    const search = document.getElementById('searchKartoteka').value.toLowerCase();
+    grid.innerHTML = "";
+    
+    cache.kartoteka.filter(o => `${o.imie} ${o.nazwisko} ${o.pesel}`.toLowerCase().includes(search)).forEach(o => {
+        let col = o.status==="POSZUKIWANY"?"text-red-500 border-red-500/30 bg-red-500/5":o.status==="PODEJRZANY"?"text-amber-500 border-amber-500/30 bg-amber-500/5":"text-slate-400 border-slate-800 bg-slate-900/30";
+        let dwTxt = o.dowody && o.dowody.length > 0 ? o.dowody.map(dw => `• [${dw.sygnatura}] ${dw.opis}`).join('<br>') : "Brak zabezpieczonych dowodów.";
+        
+        grid.innerHTML += `
+            <div class="bg-slate-950 border border-slate-800 rounded-lg p-4 space-y-3 font-mono text-xs">
+                <div class="flex justify-between items-start border-b border-slate-900 pb-2 gap-2">
+                    <div>
+                        <p class="text-sm font-bold text-slate-200">${o.nazwisko} ${o.imie}</p>
+                        <p class="text-slate-500 text-[11px]">PESEL: ${o.pesel}</p>
+                    </div>
+                    <select onchange="changeStatus('${o.pesel}', this.value)" class="bg-slate-900 border border-slate-800 rounded px-2 py-1 text-[10px] font-bold ${col} focus:outline-none cursor-pointer">
+                        <option value="CZYSTY" ${o.status === 'CZYSTY' ? 'selected' : ''}>CZYSTY</option>
+                        <option value="PODEJRZANY" ${o.status === 'PODEJRZANY' ? 'selected' : ''}>PODEJRZANY</option>
+                        <option value="POSZUKIWANY" ${o.status === 'POSZUKIWANY' ? 'selected' : ''}>POSZUKIWANY</option>
+                        <option value="ZATRZYMANY (48H)" ${o.status === 'ZATRZYMANY (48H)' ? 'selected' : ''}>ZATRZYMANY (48H)</option>
+                        <option value="DENAT" ${o.status === 'DENAT' ? 'selected' : ''}>DENAT</option>
+                    </select>
+                </div>
+                <div class="bg-slate-900 p-2 rounded text-slate-300 whitespace-pre-line text-[11px] border border-slate-800/50">${o.notatka_tajna || "Brak uwag."}</div>
+                <div class="text-[10px] text-slate-500"><b class="text-slate-400">DOWODY OPERACYJNE:</b><br>${dwTxt}</div>
+                <button onclick="deleteItem('kartoteka', '${o.pesel}')" class="text-red-500/60 hover:text-red-400 flex items-center gap-1 text-[10px] pt-1"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i> USUŃ PROFIL</button>
+            </div>`;
+    });
+    lucide.createIcons();
+}
+
+// DODAJ TĘ NOWĄ FUNKCJĘ pod funkcją renderKartoteka():
+async function changeStatus(pesel, nowyStatus) {
+    try {
+        const res = await fetch(`${API_URL}/kartoteka/${pesel}/status`, {
+            method: 'PATCH',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ status: nowyStatus })
+        });
+        const data = await res.json();
+        if(data.error) {
+            alert("Błąd zmiany statusu: " + data.error);
+        } else {
+            // Odświeżamy statystyki i dane na stronie, żeby licznik na górze też się zaktualizował!
+            await refreshStats();
+            await loadAllData();
         }
+    } catch(e) {
+        console.error(e);
+        alert("Błąd sieci przy zmianie statusu.");
+    }
+}
 
         function renderSprawy() {
             const grid = document.getElementById('grid-sprawy'); grid.innerHTML = "";
