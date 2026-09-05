@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>KSIP // Wydział Dochodzeniowo-Śledczy</title>
-  <link rel="stylesheet" href="style.css?v=3.0">
+  <link rel="stylesheet" href="style.css?v=4.0">
 </head>
 <body>
 
@@ -15,7 +15,6 @@
     <div class="system-stamp">ZASTRZEŻONE / MSWiA</div>
   </div>
 
-  <!-- NAWIGACJA ZAKŁADKOWA -->
   <div class="nav-panel">
     <button class="btn-sys" onclick="switchTab('kartoteka')">🗄️ Kartoteka Osobowy</button>
     <button class="btn-sys" onclick="switchTab('denaci')">💀 Sekcja Zwłok</button>
@@ -41,6 +40,20 @@
       </form>
     </div>
 
+    <!-- FORMULARZ EDYCJI OSOBY -->
+    <div id="form-edit-osoba" class="panel" style="display:none; border-color: var(--accent-gold);">
+      <div class="panel-header" style="color:var(--accent-gold);">✏️ EDYCJA DANYCH KARTOTEKI</div>
+      <form id="editOsobaForm">
+        <input type="hidden" id="edit_pesel">
+        <div class="form-group"><label>Imię</label><input type="text" id="edit_imie" class="form-control" required></div>
+        <div class="form-group"><label>Nazwisko</label><input type="text" id="edit_nazwisko" class="form-control" required></div>
+        <div class="form-group"><label>Status</label><input type="text" id="edit_status" class="form-control" required></div>
+        <div class="form-group"><label>Zmień Fotografie (Opcjonalnie)</label><input type="file" id="edit_zdjecie" class="form-control" accept="image/*"></div>
+        <button type="submit" class="btn-sys">ZAPISZ ZMIANY</button>
+        <button type="button" class="btn-sys danger" onclick="toggleForm('form-edit-osoba')">ANULUJ</button>
+      </form>
+    </div>
+
     <div class="panel">
       <div class="panel-header">REJESTR OSOBOWY</div>
       <div id="cardsList" class="grid-cards"></div>
@@ -52,7 +65,6 @@
     <div class="nav-panel" style="margin-bottom: 10px;">
       <button class="btn-sys danger" onclick="toggleForm('form-denat')">➕ Zarejestruj Zgon</button>
     </div>
-
     <div id="form-denat" class="panel" style="display:none;">
       <div class="panel-header">☠️ KARTA REJESTRACJI ZGONU</div>
       <form id="addDenatForm">
@@ -62,11 +74,7 @@
         <button type="submit" class="btn-sys danger">WPISZ DO REJESTRU ZWŁOK</button>
       </form>
     </div>
-
-    <div class="panel">
-      <div class="panel-header">REJESTR SEKCJI ZWŁOK</div>
-      <div id="denaciList"></div>
-    </div>
+    <div class="panel"><div class="panel-header">REJESTR SEKCJI ZWŁOK</div><div id="denaciList"></div></div>
   </div>
 
   <!-- SEKCJA 3: ŚLEDZTWA -->
@@ -74,21 +82,16 @@
     <div class="nav-panel" style="margin-bottom: 10px;">
       <button class="btn-sys danger" onclick="toggleForm('form-sprawa')">➕ Wszczęcie Śledztwa</button>
     </div>
-
     <div id="form-sprawa" class="panel" style="display:none;">
       <div class="panel-header">🔎 POSTANOWIENIE O WSZCZĘCIU ŚLEDZTWA</div>
       <form id="addSprawaForm">
-        <div class="form-group"><label>Sygnatura Akt (np. RSD-12/2026)</label><input type="text" id="sprawa_syg" class="form-control" required></div>
+        <div class="form-group"><label>Sygnatura Akt</label><input type="text" id="sprawa_syg" class="form-control" required></div>
         <div class="form-group"><label>Podejrzani</label><input type="text" id="sprawa_podejrzani" class="form-control" required></div>
         <div class="form-group"><label>Opis / Hipotezy</label><textarea id="sprawa_opis" class="form-control" rows="3"></textarea></div>
         <button type="submit" class="btn-sys danger">REJESTRUJ SPRAWĘ</button>
       </form>
     </div>
-
-    <div class="panel">
-      <div class="panel-header">AKTA ŚLEDZTW W TOKU</div>
-      <div id="sprawyList"></div>
-    </div>
+    <div class="panel"><div class="panel-header">AKTA ŚLEDZTW W TOKU</div><div id="sprawyList"></div></div>
   </div>
 
   <!-- SEKCJA 4: NAKAZY -->
@@ -96,21 +99,16 @@
     <div class="nav-panel" style="margin-bottom: 10px;">
       <button class="btn-sys danger" onclick="toggleForm('form-nakaz')">➕ Wydaj Nakaz</button>
     </div>
-
     <div id="form-nakaz" class="panel" style="display:none;">
       <div class="panel-header">📜 NAKAZ PROKURATORSKI / SĄDOWY</div>
       <form id="addNakazForm">
         <div class="form-group"><label>Prokurator Wydający</label><input type="text" id="nakaz_prokurator" class="form-control" required></div>
-        <div class="form-group"><label>Cel Nakazu (np. Przeszukanie, Aresztowanie)</label><input type="text" id="nakaz_cel" class="form-control" required></div>
+        <div class="form-group"><label>Cel Nakazu</label><input type="text" id="nakaz_cel" class="form-control" required></div>
         <div class="form-group"><label>Link do Dokumentu / Sygnatura</label><input type="text" id="nakaz_link" class="form-control"></div>
         <button type="submit" class="btn-sys danger">ZATWIERDŹ NAKAZ</button>
       </form>
     </div>
-
-    <div class="panel">
-      <div class="panel-header">REJESTR NAKAZÓW</div>
-      <div id="nakazyList"></div>
-    </div>
+    <div class="panel"><div class="panel-header">REJESTR NAKAZÓW</div><div id="nakazyList"></div></div>
   </div>
 
   <!-- SEKCJA 5: ZGP -->
@@ -118,22 +116,17 @@
     <div class="nav-panel" style="margin-bottom: 10px;">
       <button class="btn-sys danger" onclick="toggleForm('form-org')">➕ Rejestruj Grupę</button>
     </div>
-
     <div id="form-org" class="panel" style="display:none;">
       <div class="panel-header">☣️ REJESTRACJA ZORGANIZOWANEJ GRUPY PRZESTĘPCZEJ</div>
       <form id="addOrgForm">
         <div class="form-group"><label>Nazwa Grupy</label><input type="text" id="org_nazwa" class="form-control" required></div>
-        <div class="form-group"><label>Typ (np. Kartel, Gang, Mafijna)</label><input type="text" id="org_typ" class="form-control" required></div>
+        <div class="form-group"><label>Typ</label><input type="text" id="org_typ" class="form-control" required></div>
         <div class="form-group"><label>Struktura / Liderzy</label><input type="text" id="org_struktura" class="form-control"></div>
         <div class="form-group"><label>Opis Działalności</label><textarea id="org_opis" class="form-control" rows="2"></textarea></div>
         <button type="submit" class="btn-sys danger">ZAPISZ ZGP</button>
       </form>
     </div>
-
-    <div class="panel">
-      <div class="panel-header">REJESTR GRUP PRZESTĘPCZYCH</div>
-      <div id="orgsList"></div>
-    </div>
+    <div class="panel"><div class="panel-header">REJESTR GRUP PRZESTĘPCZYCH</div><div id="orgsList"></div></div>
   </div>
 
   <script>
@@ -163,7 +156,6 @@
       });
     }
 
-    // LOADERS
     async function loadKartoteka() {
       const res = await fetch('/api/osoby');
       const data = await res.json();
@@ -179,8 +171,8 @@
               <small>PESEL: ${o.pesel}</small><br>
               <span class="status-tag">${o.status}</span>
               <div style="margin-top:10px; display:flex; gap:5px; flex-wrap:wrap;">
-                <button class="btn-sys" style="font-size:10px; padding:3px 6px;" onclick="zmienStatus('${o.pesel}')">Status</button>
-                <button class="btn-sys danger" style="font-size:10px; padding:3px 6px;" onclick="usunOsobe('${o.pesel}')">Usuń</button>
+                <button class="btn-sys" style="font-size:10px; padding:3px 6px;" onclick="otworzEdycjeOsoby('${o.pesel}', '${o.imie}', '${o.nazwisko}', '${o.status}')">✏️ Edytuj</button>
+                <button class="btn-sys danger" style="font-size:10px; padding:3px 6px;" onclick="usunOsobe('${o.pesel}')">Usun</button>
               </div>
             </div>
           </div>
@@ -188,11 +180,38 @@
       });
     }
 
+    function otworzEdycjeOsoby(pesel, imie, nazwisko, status) {
+      document.getElementById('edit_pesel').value = pesel;
+      document.getElementById('edit_imie').value = imie;
+      document.getElementById('edit_nazwisko').value = nazwisko;
+      document.getElementById('edit_status').value = status;
+      document.getElementById('form-edit-osoba').style.display = 'block';
+    }
+
+    document.getElementById('editOsobaForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const pesel = document.getElementById('edit_pesel').value;
+      const file = document.getElementById('edit_zdjecie').files[0];
+      const zdjecieBase64 = file ? await toBase64(file) : null;
+
+      await fetch(`/api/osoby/${pesel}`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          imie: document.getElementById('edit_imie').value,
+          nazwisko: document.getElementById('edit_nazwisko').value,
+          status: document.getElementById('edit_status').value,
+          zdjecieBase64
+        })
+      });
+      toggleForm('form-edit-osoba');
+      loadKartoteka();
+    };
+
     async function loadDenaci() {
       const res = await fetch('/api/denaci');
       const data = await res.json();
-      const list = document.getElementById('denaciList');
-      list.innerHTML = data.map(d => `
+      document.getElementById('denaciList').innerHTML = data.map(d => `
         <div style="border-bottom:1px solid #1e2838; padding:8px 0;">
           <strong style="color:#991b1b;">💀 ${d.dane}</strong> (PESEL: ${d.pesel})<br>
           <small style="color:#6b7280;">Przyczyna: ${d.opis} | Data: ${d.data}</small>
@@ -203,21 +222,34 @@
     async function loadSprawy() {
       const res = await fetch('/api/sprawy');
       const data = await res.json();
-      const list = document.getElementById('sprawyList');
-      list.innerHTML = data.map(s => `
+      document.getElementById('sprawyList').innerHTML = data.map(s => `
         <div style="border-bottom:1px solid #1e2838; padding:8px 0;">
-          <strong style="color:#c5a059;">🔎 SYGNATURA: ${s.sygnatura}</strong> [${s.status}]<br>
+          <strong style="color:#c5a059;">🔎 SYGNATURA: ${s.sygnatura}</strong> [${s.status}]
+          <button class="btn-sys" style="font-size:9px; padding:2px 4px; float:right;" onclick="edytujSprawe('${s._id}', '${s.podejrzani}', '${s.opis}', '${s.status}')">Edytuj</button><br>
           <small>Podejrzani: ${s.podejrzani}</small><br>
           <small style="color:#6b7280;">Opis: ${s.opis}</small>
         </div>
       `).join('');
     }
 
+    async function edytujSprawe(id, staryPodejrzani, staryOpis, staryStatus) {
+      const pod = prompt("Podejrzani:", staryPodejrzani);
+      const op = prompt("Opis / Hipotezy:", staryOpis);
+      const st = prompt("Status (W TOKU / ZAMKNIĘTA):", staryStatus);
+      if(!pod || !st) return;
+
+      await fetch(`/api/sprawy/${id}`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ podejrzani: pod, opis: op, status: st })
+      });
+      loadSprawy();
+    }
+
     async function loadNakazy() {
       const res = await fetch('/api/nakazy');
       const data = await res.json();
-      const list = document.getElementById('nakazyList');
-      list.innerHTML = data.map(n => `
+      document.getElementById('nakazyList').innerHTML = data.map(n => `
         <div style="border-bottom:1px solid #1e2838; padding:8px 0;">
           <strong>📜 CEL: ${n.cel}</strong> (Prokurator: ${n.prokurator})<br>
           <small style="color:#6b7280;">Wydano: ${n.data} | Ref: ${n.link || 'Brak linku'}</small>
@@ -228,30 +260,32 @@
     async function loadOrgs() {
       const res = await fetch('/api/organizacje');
       const data = await res.json();
-      const list = document.getElementById('orgsList');
-      list.innerHTML = data.map(o => `
+      document.getElementById('orgsList').innerHTML = data.map(o => `
         <div style="border-bottom:1px solid #1e2838; padding:8px 0;">
-          <strong style="color:#991b1b;">☣️ GRUPA: ${o.nazwa}</strong> [${o.typ}]<br>
+          <strong style="color:#991b1b;">☣️ GRUPA: ${o.nazwa}</strong> [${o.typ}]
+          <button class="btn-sys" style="font-size:9px; padding:2px 4px; float:right;" onclick="edytujOrg('${o._id}', '${o.typ}', '${o.struktura}', '${o.opis}')">Edytuj</button><br>
           <small>Struktura: ${o.struktura}</small><br>
           <small style="color:#6b7280;">Opis: ${o.opis}</small>
         </div>
       `).join('');
     }
 
-    // ACTIONS
-    async function zmienStatus(pesel) {
-      const st = prompt("Wpisz nowy status (np. POSZUKIWANY, PODEJRZANY, CZYSTY):");
-      if(!st) return;
-      await fetch(`/api/osoby/${pesel}/status`, {
-        method: 'PATCH',
+    async function edytujOrg(id, staryTyp, staraStruktura, staryOpis) {
+      const typ = prompt("Typ grupy:", staryTyp);
+      const str = prompt("Struktura:", staraStruktura);
+      const op = prompt("Opis:", staryOpis);
+      if(!typ) return;
+
+      await fetch(`/api/organizacje/${id}`, {
+        method: 'PUT',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ status: st.toUpperCase() })
+        body: JSON.stringify({ typ, struktura: str, opis: op })
       });
-      loadKartoteka();
+      loadOrgs();
     }
 
     async function usunOsobe(pesel) {
-      if(!confirm("Czy na pewno usunąć akta z bazy?")) return;
+      if(!confirm("Czy usunąć kartotekę z bazy?")) return;
       await fetch(`/api/osoby/${pesel}`, { method: 'DELETE' });
       loadKartoteka();
     }
