@@ -1,1 +1,556 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terminal Operacyjny OWP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen" onload="initSystem()">
 
+    <header class="border-b border-slate-800 bg-slate-950 p-4 sticky top-0 z-50 shadow-md">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-blue-600/20 text-blue-500 rounded-lg border border-blue-500/30">
+                    <i data-lucide="terminal" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-wider text-slate-200">CENTRALNY TERMINAL OPERACYJNY KWP</h1>
+                    <p class="text-xs text-slate-400 font-mono">Zintegrowany Panel Zarządzania Ogniwa Wywiadowczo-Patrolowego</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="text-right font-mono text-xs text-slate-400">
+                    STATUS: <span id="api-status" class="text-red-500">ROZŁĄCZONO</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <nav class="bg-slate-950 border-b border-slate-800 sticky top-[73px] z-40">
+        <div class="max-w-7xl mx-auto flex overflow-x-auto text-sm font-mono">
+            <button onclick="switchTab('kartoteka')" id="btn-kartoteka" class="px-6 py-3 border-b-2 border-blue-500 text-blue-400 font-bold bg-slate-900/50">1. KARTOTEKA OBYWATELI</button>
+            <button onclick="switchTab('sprawy')" id="btn-sprawy" class="px-6 py-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition">2. REJESTR SPRAW</button>
+            <button onclick="switchTab('nakazy')" id="btn-nakazy" class="px-6 py-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition">3. NAKAZY PROKURATORSKIE</button>
+            <button onclick="switchTab('denaci')" id="btn-denaci" class="px-6 py-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition">4. REJESTR DENATÓW</button>
+            <button onclick="switchTab('organizacje')" id="btn-organizacje" class="px-6 py-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition">5. STRUKTURY ORGANIZACYJNE</button>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto p-4 space-y-6">
+
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 font-mono">
+                <p class="text-xs text-slate-400 uppercase">Obywatele</p>
+                <p class="text-xl font-bold mt-1 text-slate-200" id="stat-total">0</p>
+            </div>
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 font-mono">
+                <p class="text-xs text-slate-400 uppercase text-red-400">Listy Gończe</p>
+                <p class="text-xl font-bold mt-1 text-red-500" id="stat-wanted">0</p>
+            </div>
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 font-mono">
+                <p class="text-xs text-slate-400 uppercase text-amber-400">Postępowania</p>
+                <p class="text-xl font-bold mt-1 text-amber-500" id="stat-sprawy">0</p>
+            </div>
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 font-mono">
+                <p class="text-xs text-slate-400 uppercase text-purple-400">Aktywne Nakazy</p>
+                <p class="text-xl font-bold mt-1 text-purple-500" id="stat-nakazy">0</p>
+            </div>
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 font-mono col-span-2 md:col-span-1">
+                <p class="text-xs text-slate-400 uppercase text-emerald-400">Zarejestrowane Organizacje</p>
+                <p class="text-xl font-bold mt-1 text-emerald-500" id="stat-organizacje">0</p>
+            </div>
+        </div>
+
+        <section id="tab-kartoteka" class="tab-content space-y-4">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="bg-slate-950 p-5 rounded-xl border border-slate-800 h-fit space-y-4">
+                    <h2 class="text-md font-bold font-mono text-blue-400 flex items-center gap-2"><i data-lucide="user-plus" class="w-4 h-4"></i> REJESTRACJA PROFILU</h2>
+                    <div class="space-y-3 text-sm font-mono">
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Imię</label>
+                            <input type="text" id="ob-imie" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-slate-200 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Nazwisko</label>
+                            <input type="text" id="ob-nazwisko" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-slate-200 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Numer PESEL</label>
+                            <input type="text" id="ob-pesel" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-slate-200 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Status Operacyjny</label>
+                            <select id="ob-status" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-slate-200 focus:outline-none">
+                                <option value="CZYSTY">CZYSTY</option>
+                                <option value="PODEJRZANY">PODEJRZANY</option>
+                                <option value="POSZUKIWANY">POSZUKIWANY</option>
+                                <option value="ZATRZYMANY (48H)">ZATRZYMANY (48H)</option>
+                                <option value="DENAT">DENAT</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Notatka poufna / Adnotacje</label>
+                            <textarea id="ob-notatka" rows="3" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-slate-200 focus:outline-none text-xs"></textarea>
+                        </div>
+                        <button onclick="submitObywatel()" class="w-full bg-blue-600 hover:bg-blue-700 font-bold py-2 rounded text-xs transition">ZAPISZ W BAZIE</button>
+                    </div>
+
+                    <div class="border-t border-slate-800 pt-4 mt-4 space-y-3 text-sm font-mono">
+                        <h3 class="text-xs font-bold text-amber-500 flex items-center gap-2"><i data-lucide="paperclip" class="w-3.5 h-3.5"></i> ZABEZPIECZ DOWÓD OPERACYJNY</h3>
+                        <input type="text" id="dowod-pesel" placeholder="PESEL Obywatela" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-xs text-slate-200 focus:outline-none">
+                        <input type="text" id="dowod-sygnatura" placeholder="Sygnatura (np. DOWOD/2026/01)" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-xs text-slate-200 focus:outline-none">
+                        <input type="text" id="dowod-opis" placeholder="Opis rzeczy..." class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-xs text-slate-200 focus:outline-none">
+                        <button onclick="submitDowod()" class="w-full bg-amber-600/20 hover:bg-amber-600/40 text-amber-400 font-bold py-1.5 rounded text-xs border border-amber-600/30 transition">DODAJ DOWÓD</button>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-2 space-y-4">
+                    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
+                        <input type="text" id="searchKartoteka" oninput="renderKartoteka()" placeholder="Filtruj bazę po nazwisku lub numerze PESEL..." class="w-full bg-slate-900 border border-slate-800 rounded p-2 font-mono text-xs text-slate-200 focus:outline-none">
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="grid-kartoteka"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="tab-sprawy" class="tab-content hidden space-y-4">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="bg-slate-950 p-5 rounded-xl border border-slate-800 h-fit space-y-3 font-mono text-sm">
+                    <h2 class="text-md font-bold text-amber-500 flex items-center gap-2"><i data-lucide="briefcase" class="w-4 h-4"></i> OTWÓRZ NOWE POSTĘPOWANIE</h2>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Sygnatura / Nazwa sprawy</label>
+                        <input type="text" id="sp-sygnatura" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-slate-200 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Podejrzani (Osoby/Gangi)</label>
+                        <input type="text" id="sp-podejrzani" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-slate-200 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Status sprawy</label>
+                        <select id="sp-stan" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-slate-200 focus:outline-none">
+                            <option value="OTWARTA">OTWARTA</option>
+                            <option value="ZAMKNIĘTA">ZAMKNIĘTA</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Opis działań operacyjnych</label>
+                        <textarea id="sp-opis" rows="4" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-slate-200 focus:outline-none text-xs"></textarea>
+                    </div>
+                    <button onclick="submitSprawa()" class="w-full bg-amber-600 hover:bg-amber-700 font-bold py-2 rounded text-xs transition">ZAREJESTRUJ SPRAWĘ</button>
+                </div>
+                <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4" id="grid-sprawy"></div>
+            </div>
+        </section>
+
+        <section id="tab-nakazy" class="tab-content hidden space-y-4">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="bg-slate-950 p-5 rounded-xl border border-slate-800 h-fit space-y-3 font-mono text-sm">
+                    <h2 class="text-md font-bold text-purple-400 flex items-center gap-2"><i data-lucide="file-check" class="w-4 h-4"></i> WPROWADŹ NAKAZ PROKURATORSKI</h2>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Imię i Nazwisko Prokuratora</label>
+                        <input type="text" id="nk-prokurator" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-slate-200 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Cel nakazu (Obywatel / Firma)</label>
+                        <input type="text" id="nk-cel" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-slate-200 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Link do nakazu (URL)</label>
+                        <input type="text" id="nk-link" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-slate-200 focus:outline-none">
+                    </div>
+                    <button onclick="submitNakaz()" class="w-full bg-purple-600 hover:bg-purple-700 font-bold py-2 rounded text-xs transition">ZATWIERDŹ NAKAZ</button>
+                </div>
+                <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4" id="grid-nakazy"></div>
+            </div>
+        </section>
+
+        <section id="tab-denaci" class="tab-content hidden space-y-4">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="bg-slate-950 p-5 rounded-xl border border-slate-800 h-fit space-y-3 font-mono text-sm">
+                    <h2 class="text-md font-bold text-emerald-400 flex items-center gap-2"><i data-lucide="skull" class="w-4 h-4"></i> SPORZĄDŹ AKT ZGONU</h2>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Imię i Nazwisko Denata</label>
+                        <input type="text" id="dn-nazwisko" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-slate-200 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">PESEL Denata</label>
+                        <input type="text" id="dn-pesel" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-slate-200 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Okoliczności śmierci / Miejsce</label>
+                        <textarea id="dn-opis" rows="4" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-slate-200 focus:outline-none text-xs"></textarea>
+                    </div>
+                    <button onclick="submitDenat()" class="w-full bg-emerald-600 hover:bg-emerald-700 font-bold py-2 rounded text-xs transition">ZAPISZ W REJESTRZE</button>
+                </div>
+                <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4" id="grid-denaci"></div>
+            </div>
+        </section>
+
+        <section id="tab-organizacje" class="tab-content hidden space-y-4">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="bg-slate-950 p-5 rounded-xl border border-slate-800 h-fit space-y-3 font-mono text-sm">
+                    <h2 class="text-md font-bold text-blue-400 flex items-center gap-2"><i data-lucide="shield-alert" class="w-4 h-4"></i> REJESTRACJA STRUKTURY</h2>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Nazwa organizacji *</label>
+                        <input type="text" id="org-nazwa" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-slate-200 focus:outline-none placeholder-slate-600 text-xs" placeholder="Np. KLAN SMOKÓW">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Typ organizacji *</label>
+                        <input type="text" id="org-typ" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-slate-200 focus:outline-none placeholder-slate-600 text-xs" placeholder="np. Gang, Firma, Związek">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Struktura i kluczowi członkowie *</label>
+                        <textarea id="org-struktura" rows="3" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-slate-200 focus:outline-none text-xs placeholder-slate-600 resize-none" placeholder="Lider: XYZ, Zastępca: ABC, Komórki: ..."></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Opis działania / cele *</label>
+                        <textarea id="org-opis" rows="4" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-slate-200 focus:outline-none text-xs placeholder-slate-600 resize-none" placeholder="Co robi organizacja, jakie ma cele, powiązania..."></textarea>
+                    </div>
+                    <button onclick="submitOrganizacja()" class="w-full bg-blue-600 hover:bg-blue-700 font-bold py-2 rounded text-xs transition text-white">ZAPISZ ORGANIZACJĘ</button>
+                </div>
+                <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4" id="grid-organizacje"></div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        const API_URL = "https://owp-backend.onrender.com/api";
+        let cache = { kartoteka: [], sprawy: [], nakazy: [], denaci: [], organizacje: [] };
+
+        async function initSystem() {
+            try {
+                await loadAllData();
+                document.getElementById('api-status').innerText = "POŁĄCZONO Z BAZĄ";
+                document.getElementById('api-status').className = "text-emerald-400 animate-pulse";
+            } catch(e) {
+                console.error(e);
+                alert("Błąd synchronizacji. Poczekaj chwilę na rozruch serwera i odśwież stronę.");
+            }
+        }
+
+        async function refreshStats() {
+            document.getElementById('stat-total').innerText = cache.kartoteka.length;
+            document.getElementById('stat-wanted').innerText = cache.kartoteka.filter(o => o.status === "POSZUKIWANY").length;
+            document.getElementById('stat-sprawy').innerText = cache.sprawy.length;
+            document.getElementById('stat-nakazy').innerText = cache.nakazy.length;
+            document.getElementById('stat-organizacje').innerText = cache.organizacje ? cache.organizacje.length : 0;
+        }
+
+        async function loadAllData() {
+            const [k, s, n, d, o] = await Promise.all([
+                fetch(`${API_URL}/kartoteka`).then(r => r.json()),
+                fetch(`${API_URL}/sprawy`).then(r => r.json()),
+                fetch(`${API_URL}/nakazy`).then(r => r.json()),
+                fetch(`${API_URL}/denaci`).then(r => r.json()),
+                fetch(`${API_URL}/organizacje`).then(r => r.json()).catch(() => [])
+            ]);
+            cache.kartoteka = k; 
+            cache.sprawy = s; 
+            cache.nakazy = n; 
+            cache.denaci = d; 
+            cache.organizacje = o;
+            
+            await refreshStats();
+            renderAll();
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            
+            document.querySelectorAll('nav button').forEach(btn => {
+                btn.className = "px-6 py-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition";
+            });
+            const activeBtn = document.getElementById(`btn-${tabId}`);
+            if(tabId==='kartoteka') activeBtn.className="px-6 py-3 border-b-2 border-blue-500 text-blue-400 font-bold bg-slate-900/50";
+            if(tabId==='sprawy') activeBtn.className="px-6 py-3 border-b-2 border-amber-500 text-amber-400 font-bold bg-slate-900/50";
+            if(tabId==='nakazy') activeBtn.className="px-6 py-3 border-b-2 border-purple-500 text-purple-400 font-bold bg-slate-900/50";
+            if(tabId==='denaci') activeBtn.className="px-6 py-3 border-b-2 border-emerald-500 text-emerald-400 font-bold bg-slate-900/50";
+            if(tabId==='organizacje') activeBtn.className="px-6 py-3 border-b-2 border-blue-500 text-blue-400 font-bold bg-slate-900/50";
+        }
+
+        function renderAll() {
+            renderKartoteka();
+            renderSprawy();
+            renderNakazy();
+            renderDenaci();
+            renderOrganizacje();
+            lucide.createIcons();
+        }
+
+        function renderKartoteka() {
+            const grid = document.getElementById('grid-kartoteka');
+            const search = document.getElementById('searchKartoteka').value.toLowerCase();
+            grid.innerHTML = "";
+            
+            cache.kartoteka.filter(o => `${o.imie} ${o.nazwisko} ${o.pesel}`.toLowerCase().includes(search)).forEach(o => {
+                let col = o.status==="POSZUKIWANY"?"text-red-500 border-red-500/30 bg-red-500/5":o.status==="PODEJRZANY"?"text-amber-500 border-amber-500/30 bg-amber-500/5":"text-slate-400 border-slate-800 bg-slate-900/30";
+                let dwTxt = o.dowody && o.dowody.length > 0 ? o.dowody.map(dw => `• [${dw.sygnatura}] ${dw.opis}`).join('<br>') : "Brak zabezpieczonych dowodów.";
+                
+                grid.innerHTML += `
+                    <div class="bg-slate-950 border border-slate-800 rounded-lg p-4 space-y-3 font-mono text-xs">
+                        <div class="flex justify-between items-start border-b border-slate-900 pb-2 gap-2">
+                            <div>
+                                <p class="text-sm font-bold text-slate-200">${o.nazwisko} ${o.imie}</p>
+                                <p class="text-slate-500 text-[11px]">PESEL: ${o.pesel}</p>
+                            </div>
+                            <select onchange="changeStatus('${o.pesel}', this.value)" class="bg-slate-900 border border-slate-800 rounded px-2 py-1 text-[10px] font-bold ${col} focus:outline-none cursor-pointer">
+                                <option value="CZYSTY" ${o.status === 'CZYSTY' ? 'selected' : ''}>CZYSTY</option>
+                                <option value="PODEJRZANY" ${o.status === 'PODEJRZANY' ? 'selected' : ''}>PODEJRZANY</option>
+                                <option value="POSZUKIWANY" ${o.status === 'POSZUKIWANY' ? 'selected' : ''}>POSZUKIWANY</option>
+                                <option value="ZATRZYMANY (48H)" ${o.status === 'ZATRZYMANY (48H)' ? 'selected' : ''}>ZATRZYMANY (48H)</option>
+                                <option value="DENAT" ${o.status === 'DENAT' ? 'selected' : ''}>DENAT</option>
+                            </select>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[10px] text-slate-500 font-bold">UWAGI OPERACYJNE / NOTATKA:</label>
+                            <textarea id="note-${o.pesel}" rows="2" class="w-full bg-slate-900 p-2 rounded text-slate-300 text-[11px] border border-slate-800 focus:outline-none focus:border-slate-700 resize-none">${o.notatka_tajna || ""}</textarea>
+                            <button onclick="changeNotatka('${o.pesel}')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-0.5 rounded text-[10px] border border-slate-700 transition">ZAPISZ UWAGI</button>
+                        </div>
+                        <div class="text-[10px] text-slate-500 pt-1"><b class="text-slate-400">DOWODY OPERACYJNE:</b><br>${dwTxt}</div>
+                        <div class="flex justify-between items-center border-t border-slate-900 pt-2 mt-1">
+                            <button onclick="deleteItem('kartoteka', '${o.pesel}')" class="text-red-500/60 hover:text-red-400 flex items-center gap-1 text-[10px]"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i> USUŃ PROFIL</button>
+                        </div>
+                    </div>`;
+            });
+            lucide.createIcons();
+        }
+
+        async function changeStatus(pesel, nowyStatus) {
+            try {
+                const res = await fetch(`${API_URL}/kartoteka/${pesel}/status`, {
+                    method: 'PATCH',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ status: nowyStatus })
+                });
+                const data = await res.json();
+                if(data.error) {
+                    alert("Błąd zmiany statusu: " + data.error);
+                } else {
+                    await loadAllData();
+                }
+            } catch(e) {
+                console.error(e);
+                alert("Błąd sieci przy zmianie statusu.");
+            }
+        }
+
+        async function changeNotatka(pesel) {
+            const nowaTresc = document.getElementById(`note-${pesel}`).value;
+            try {
+                const res = await fetch(`${API_URL}/kartoteka/${pesel}/notatka`, {
+                    method: 'PATCH',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ notatka_tajna: nowaTresc })
+                });
+                const data = await res.json();
+                if(data.error) {
+                    alert("Błąd zapisu notatki: " + data.error);
+                } else {
+                    await loadAllData();
+                    alert("Uwagi operacyjne zostały pomyślnie zaktualizowane w bazie danych!");
+                }
+            } catch(e) {
+                console.error(e);
+                alert("Błąd sieci przy zapisie uwag.");
+            }
+        }
+
+        function renderSprawy() {
+            const grid = document.getElementById('grid-sprawy'); grid.innerHTML = "";
+            cache.sprawy.forEach(s => {
+                grid.innerHTML += `
+                    <div class="bg-slate-950 border border-slate-800 rounded-lg p-4 font-mono text-xs space-y-2">
+                        <div class="flex justify-between border-b border-slate-900 pb-2">
+                            <span class="font-bold text-amber-500 text-sm">${s.sygnatura}</span>
+                            <span class="text-slate-400 font-bold">${s.status || 'OTWARTA'}</span>
+                        </div>
+                        <p class="text-slate-300"><b>Podejrzani:</b> ${s.podejrzani || 'Brak danych'}</p>
+                        <p class="text-slate-400 bg-slate-900 p-2 rounded border border-slate-800/50 whitespace-pre-line">${s.opis || 'Brak opisu'}</p>
+                        <div class="flex justify-between items-center pt-2 border-t border-slate-900 mt-1">
+                            <span class="text-slate-600 text-[10px]">Sprawa</span>
+                            <button onclick="deleteItem('sprawy', '${s.sygnatura}')" class="text-red-500/60 hover:text-red-400 flex items-center gap-1 text-[10px]"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i> SKUŚ SPRAWĘ (USUŃ)</button>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function renderNakazy() {
+            const grid = document.getElementById('grid-nakazy'); grid.innerHTML = "";
+            cache.nakazy.forEach(n => {
+                grid.innerHTML += `
+                    <div class="bg-slate-950 border border-slate-800 rounded-lg p-4 font-mono text-xs space-y-2">
+                        <div class="border-b border-slate-900 pb-2"><span class="font-bold text-purple-400 text-sm">Nakaz na: ${n.cel}</span></div>
+                        <p class="text-slate-200"><b>Organ wydający:</b> Prokurator ${n.prokurator}</p>
+                        <p class="text-slate-300"><b>Dokumentacja:</b> <a href="${n.link}" target="_blank" class="text-blue-400 underline">Otwórz załącznik</a></p>
+                        <div class="flex justify-between items-center pt-2 border-t border-slate-900 mt-1">
+                            <span class="text-slate-600 text-[10px]">Nakaz</span>
+                            <button onclick="deleteItem('nakazy', '${n.cel}')" class="text-red-500/60 hover:text-red-400 flex items-center gap-1 text-[10px]"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i> WYCOFAJ NAKAZ</button>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function renderDenaci() {
+            const grid = document.getElementById('grid-denaci'); grid.innerHTML = "";
+            cache.denaci.forEach(d => {
+                grid.innerHTML += `
+                    <div class="bg-slate-950 border border-slate-800 rounded-lg p-4 font-mono text-xs space-y-2">
+                        <div class="flex justify-between border-b border-slate-900 pb-2"><span class="font-bold text-emerald-400 text-sm">${d.dane}</span></div>
+                        <p class="text-slate-400">PESEL: ${d.pesel || 'BRAK'}</p>
+                        <p class="text-slate-400 bg-slate-900 p-2 rounded border border-slate-800/50 whitespace-pre-line"><b>Okoliczności:</b> ${d.opis || 'Brak'}</p>
+                        <div class="flex justify-between items-center pt-2 border-t border-slate-900 mt-1">
+                            <span class="text-slate-600 text-[10px]">Zgon</span>
+                            <button onclick="deleteItem('denaci', '${d.dane}')" class="text-red-500/60 hover:text-red-400 flex items-center gap-1 text-[10px]"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i> USUŃ Z REJESTRU</button>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function renderOrganizacje() {
+            const grid = document.getElementById('grid-organizacje'); grid.innerHTML = "";
+            if (!cache.organizacje || cache.organizacje.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center font-mono text-xs text-slate-500 py-8">Brak zarejestrowanych struktur w bazie...</div>`;
+                return;
+            }
+            cache.organizacje.forEach(o => {
+                grid.innerHTML += `
+                    <div class="bg-slate-950 border border-slate-800 rounded-lg p-4 font-mono text-xs space-y-3">
+                        <div class="flex justify-between border-b border-slate-900 pb-2 gap-2 items-center">
+                            <span class="font-bold text-blue-400 text-sm">${o.nazwa || "NIEZNANA"}</span>
+                            <span class="px-2 py-0.5 border text-[10px] font-bold rounded text-slate-400 border-slate-800 bg-slate-900/30">${o.typ || "BRAK TYPU"}</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-500 font-bold text-[10px]">STRUKTURA I CZŁONKOWIE:</span>
+                            <p class="text-slate-300 text-[11px] bg-slate-900 p-2 rounded border border-slate-800/40 whitespace-pre-line mt-0.5">${o.struktura || "Brak danych."}</p>
+                        </div>
+                        <div>
+                            <span class="text-slate-500 font-bold text-[10px]">OPIS DZIAŁANIA / CELE:</span>
+                            <p class="text-slate-400 text-[11px] bg-slate-900 p-2 rounded border border-slate-800/40 whitespace-pre-line mt-0.5">${o.opis || "Brak opisu."}</p>
+                        </div>
+                        <div class="flex justify-between items-center text-[10px] text-slate-600 pt-1 border-t border-slate-900">
+                            <span>Organizacja</span>
+                            <button onclick="deleteItem('organizacje', '${o.nazwa}')" class="text-red-500/60 hover:text-red-400 flex items-center gap-1"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i> USUŃ</button>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        async function sendPost(endpoint, body) {
+            const res = await fetch(`${API_URL}/${endpoint}`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body) });
+            const data = await res.json();
+            if(data.error) { alert("Błąd: " + data.error); return false; }
+            await loadAllData(); 
+            return true;
+        }
+
+        async function deleteItem(endpoint, identifier) {
+            if(!confirm("Czy na pewno chcesz usunąć ten wpis z bazy danych?")) return;
+            await fetch(`${API_URL}/${endpoint}/${encodeURIComponent(identifier)}`, { method: 'DELETE' });
+            await loadAllData();
+        }
+
+        async function submitObywatel() {
+            const body = { 
+                imie: document.getElementById('ob-imie').value, 
+                nazwisko: document.getElementById('ob-nazwisko').value, 
+                pesel: document.getElementById('ob-pesel').value, 
+                status: document.getElementById('ob-status').value,
+                notatka_tajna: document.getElementById('ob-notatka').value
+            };
+            if(!body.imie || !body.nazwisko || !body.pesel) return alert("Uzupełnij wymagane pola!");
+            if(await sendPost('kartoteka', body)) {
+                document.getElementById('ob-imie').value = '';
+                document.getElementById('ob-nazwisko').value = '';
+                document.getElementById('ob-pesel').value = '';
+                document.getElementById('ob-notatka').value = '';
+            }
+        }
+
+        async function submitDowod() {
+            const pesel = document.getElementById('dowod-pesel').value;
+            const body = {
+                sygnatura: document.getElementById('dowod-sygnatura').value,
+                opis: document.getElementById('dowod-opis').value
+            };
+            if(!pesel || !body.sygnatura || !body.opis) return alert("Uzupełnij PESEL, sygnaturę i opis dowodu!");
+            
+            const res = await fetch(`${API_URL}/kartoteka/${pesel}/dowody`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(body)
+            });
+            const data = await res.json();
+            if(data.error) alert("Błąd: " + data.error);
+            else {
+                document.getElementById('dowod-pesel').value = '';
+                document.getElementById('dowod-sygnatura').value = '';
+                document.getElementById('dowod-opis').value = '';
+                await loadAllData();
+            }
+        }
+
+        async function submitSprawa() {
+            const body = {
+                sygnatura: document.getElementById('sp-sygnatura').value,
+                podejrzani: document.getElementById('sp-podejrzani').value,
+                status: document.getElementById('sp-stan').value,
+                opis: document.getElementById('sp-opis').value
+            };
+            if(!body.sygnatura) return alert("Podaj sygnaturę sprawy!");
+            if(await sendPost('sprawy', body)) {
+                document.getElementById('sp-sygnatura').value = '';
+                document.getElementById('sp-podejrzani').value = '';
+                document.getElementById('sp-opis').value = '';
+            }
+        }
+
+        async function submitNakaz() {
+            const body = {
+                prokurator: document.getElementById('nk-prokurator').value,
+                cel: document.getElementById('nk-cel').value,
+                link: document.getElementById('nk-link').value
+            };
+            if(!body.cel || !body.prokurator) return alert("Uzupełnij dane nakazu!");
+            if(await sendPost('nakazy', body)) {
+                document.getElementById('nk-prokurator').value = '';
+                document.getElementById('nk-cel').value = '';
+                document.getElementById('nk-link').value = '';
+            }
+        }
+
+        async function submitDenat() {
+            const body = {
+                dane: document.getElementById('dn-nazwisko').value,
+                pesel: document.getElementById('dn-pesel').value,
+                opis: document.getElementById('dn-opis').value
+            };
+            if(!body.dane) return alert("Podaj dane denata!");
+            if(await sendPost('denaci', body)) {
+                document.getElementById('dn-nazwisko').value = '';
+                document.getElementById('dn-pesel').value = '';
+                document.getElementById('dn-opis').value = '';
+            }
+        }
+
+        async function submitOrganizacja() {
+            const body = {
+                nazwa: document.getElementById('org-nazwa').value,
+                typ: document.getElementById('org-typ').value,
+                struktura: document.getElementById('org-struktura').value,
+                opis: document.getElementById('org-opis').value
+            };
+            if(!body.nazwa || !body.typ) return alert("Uzupełnij nazwę i typ organizacji!");
+            if(await sendPost('organizacje', body)) {
+                document.getElementById('org-nazwa').value = '';
+                document.getElementById('org-typ').value = '';
+                document.getElementById('org-struktura').value = '';
+                document.getElementById('org-opis').value = '';
+            }
+        }
+    </script>
+</body>
+</html>
