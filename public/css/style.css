@@ -1,0 +1,51 @@
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+body { background-color: #0b1329; color: #e2e8f0; min-height: 100vh; padding-bottom: 30px; }
+
+/* HEADER z policyjną belką */
+.header { background: #002b49; width: 100%; }
+.banner { width: 100%; background-color: #12284c; display: flex; align-items: center; justify-content: space-between; padding: 15px 25px; border-bottom: 2px solid #005691; }
+.logo-container { display: flex; align-items: center; gap: 20px; }
+.logo-img { height: 75px; width: auto; filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.5)); }
+.title-main { color: #ffffff; font-size: 22px; font-weight: 800; letter-spacing: 2px; margin: 0; }
+.title-sub { color: #94a3b8; font-size: 13px; font-weight: 400; margin-top: 4px; }
+.brand-policja { font-weight: 900; font-size: 28px; color: #ffffff; letter-spacing: 4px; }
+
+/* NAV / PRZYCISKI MODUŁÓW */
+.container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
+.nav-buttons { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; background: #131c31; padding: 15px; border-radius: 8px; border: 1px solid #1e293b; }
+.btn { padding: 10px 16px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; color: white; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; }
+.btn-primary { background: #0284c7; } .btn-primary:hover { background: #0369a1; }
+.btn-secondary { background: #475569; } .btn-secondary:hover { background: #334155; }
+.btn-danger { background: #dc2626; } .btn-danger:hover { background: #b91c1c; }
+.btn-success { background: #16a34a; } .btn-success:hover { background: #15803d; }
+.btn-warning { background: #d97706; } .btn-warning:hover { background: #b45309; }
+
+/* KARTY / TREŚĆ */
+.panel { background: #1e293b; border-radius: 8px; padding: 20px; border: 1px solid #334155; margin-bottom: 20px; }
+.panel-header { font-size: 18px; font-weight: bold; margin-bottom: 15px; border-bottom: 1px solid #334155; padding-bottom: 8px; color: #38bdf8; display: flex; justify-content: space-between; align-items: center; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
+.card { background: #0f172a; padding: 15px; border-radius: 6px; border-left: 4px solid #0284c7; }
+.card-title { font-weight: bold; font-size: 16px; margin-bottom: 5px; color: #f8fafc; }
+.card-body { font-size: 13px; color: #94a3b8; line-height: 1.5; }
+
+/* FORMY I MODALE */
+.form-group { margin-bottom: 12px; }
+.form-group label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: #cbd5e1; }
+.form-control { width: 100%; padding: 8px 12px; background: #0f172a; border: 1px solid #334155; border-radius: 4px; color: white; font-size: 14px; }
+.form-control:focus { outline: none; border-color: #38bdf8; }
+textarea.form-control { resize: vertical; min-height: 80px; }
+
+.modal-backdrop { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); display: none; justify-content: center; align-items: center; z-index: 1000; }
+.modal { background: #1e293b; width: 100%; max-width: 500px; border-radius: 8px; padding: 20px; border: 1px solid #475569; }
+.modal-header { font-weight: bold; font-size: 16px; margin-bottom: 15px; color: #38bdf8; }
+.modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 15px; }
+
+/* AKTA OSOBOWE */
+.badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
+.status-CZYSTY { background: #16a34a; color: white; }
+.status-PODEJRZANY { background: #d97706; color: white; }
+.status-TYMCZASOWO_ARESZTOWANY { background: #ea580c; color: white; }
+.status-POSZUKIWANY { background: #dc2626; color: white; }
+.status-OSKARŻONY { background: #9333ea; color: white; }
+.status-ŚWIADEK_KORONNY { background: #0d9488; color: white; }
+.status-DENAT { background: #475569; color: white; }
