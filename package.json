@@ -1,14 +1,13 @@
 {
-  "name": "terminal-wds",
+  "name": "wds-terminal-web",
   "version": "1.0.0",
+  "description": "Terminal Webowy Wydziału Dochodzeniowo-Śledczego",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
-    "bcryptjs": "^2.4.3",
     "express": "^4.18.2",
-    "express-session": "^1.17.3",
-    "mongoose": "^8.0.0"
+    "mongoose": "^7.5.0"
   }
 }
