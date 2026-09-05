@@ -3,9 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>KSIP // Wydział Dochodzeniowo-Śledczy</title>
-
-  <!-- Wymuszenie braku pamięci podręcznej dla css -->
-  <link rel="stylesheet" href="style.css?v=2.0">
+  <link rel="stylesheet" href="style.css?v=3.0">
 </head>
 <body>
 
@@ -17,52 +15,145 @@
     <div class="system-stamp">ZASTRZEŻONE / MSWiA</div>
   </div>
 
+  <!-- NAWIGACJA ZAKŁADKOWA -->
   <div class="nav-panel">
-    <button class="btn-sys" onclick="odswiezBaze()">🔄 Odśwież Dane</button>
-    <button class="btn-sys danger" onclick="pokazFormularz()">➕ Nowy Wpis Osobowy</button>
+    <button class="btn-sys" onclick="switchTab('kartoteka')">🗄️ Kartoteka Osobowy</button>
+    <button class="btn-sys" onclick="switchTab('denaci')">💀 Sekcja Zwłok</button>
+    <button class="btn-sys" onclick="switchTab('sprawy')">🔍 Śledztwa / Sprawy</button>
+    <button class="btn-sys" onclick="switchTab('nakazy')">📜 Nakazy / Postanowienia</button>
+    <button class="btn-sys" onclick="switchTab('organizacje')">☣️ Grupy Przestępcze</button>
   </div>
 
-  <!-- FORMULARZ REJESTRACJI -->
-  <div id="panel-formularz" class="panel" style="display: none;">
-    <div class="panel-header">📑 KARTA REJESTRACYJNA OSOBY</div>
-    <form id="rejestracjaForm">
-      <div class="form-group">
-        <label>Imię</label>
-        <input type="text" id="imie" class="form-control" required autocomplete="off">
-      </div>
-      <div class="form-group">
-        <label>Nazwisko</label>
-        <input type="text" id="nazwisko" class="form-control" required autocomplete="off">
-      </div>
-      <div class="form-group">
-        <label>Numer PESEL</label>
-        <input type="text" id="pesel" class="form-control" maxlength="11" required autocomplete="off">
-      </div>
-      <div class="form-group">
-        <label>Wgraj zdjęcie (Zostanie zapisane w bazie MongoDB)</label>
-        <input type="file" id="zdjecieInput" class="form-control" accept="image/*">
-      </div>
-      <button type="submit" class="btn-sys danger">ZAPISZ W BAZIE WDS_DATABASE</button>
-    </form>
+  <!-- SEKCJA 1: KARTOTEKA -->
+  <div id="tab-kartoteka" class="tab-content">
+    <div class="nav-panel" style="margin-bottom: 10px;">
+      <button class="btn-sys danger" onclick="toggleForm('form-osoba')">➕ Dodaj Osobę</button>
+    </div>
+
+    <div id="form-osoba" class="panel" style="display:none;">
+      <div class="panel-header">📑 NOWA KARTA REJESTRACYJNA</div>
+      <form id="addOsobaForm">
+        <div class="form-group"><label>Imię</label><input type="text" id="add_imie" class="form-control" required></div>
+        <div class="form-group"><label>Nazwisko</label><input type="text" id="add_nazwisko" class="form-control" required></div>
+        <div class="form-group"><label>PESEL</label><input type="text" id="add_pesel" class="form-control" maxlength="11" required></div>
+        <div class="form-group"><label>Fotografia</label><input type="file" id="add_zdjecie" class="form-control" accept="image/*"></div>
+        <button type="submit" class="btn-sys danger">ZAPISZ OSOBĘ</button>
+      </form>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">REJESTR OSOBOWY</div>
+      <div id="cardsList" class="grid-cards"></div>
+    </div>
   </div>
 
-  <!-- BAZA DANYCH -->
-  <div class="panel">
-    <div class="panel-header">🗄️ SKOROWIDZ OSOBOWY (WDS_DATABASE)</div>
-    <div id="listaOsob" class="grid-cards">
-      <!-- Wpisy ładowane dynamicznie -->
+  <!-- SEKCJA 2: SEKCJA ZWŁOK -->
+  <div id="tab-denaci" class="tab-content" style="display:none;">
+    <div class="nav-panel" style="margin-bottom: 10px;">
+      <button class="btn-sys danger" onclick="toggleForm('form-denat')">➕ Zarejestruj Zgon</button>
+    </div>
+
+    <div id="form-denat" class="panel" style="display:none;">
+      <div class="panel-header">☠️ KARTA REJESTRACJI ZGONU</div>
+      <form id="addDenatForm">
+        <div class="form-group"><label>Imię i Nazwisko / Tożsamość</label><input type="text" id="denat_dane" class="form-control" required></div>
+        <div class="form-group"><label>PESEL (Opcjonalnie)</label><input type="text" id="denat_pesel" class="form-control"></div>
+        <div class="form-group"><label>Przyczyna zgonu / Obrażenia</label><input type="text" id="denat_przyczyna" class="form-control" required></div>
+        <button type="submit" class="btn-sys danger">WPISZ DO REJESTRU ZWŁOK</button>
+      </form>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">REJESTR SEKCJI ZWŁOK</div>
+      <div id="denaciList"></div>
+    </div>
+  </div>
+
+  <!-- SEKCJA 3: ŚLEDZTWA -->
+  <div id="tab-sprawy" class="tab-content" style="display:none;">
+    <div class="nav-panel" style="margin-bottom: 10px;">
+      <button class="btn-sys danger" onclick="toggleForm('form-sprawa')">➕ Wszczęcie Śledztwa</button>
+    </div>
+
+    <div id="form-sprawa" class="panel" style="display:none;">
+      <div class="panel-header">🔎 POSTANOWIENIE O WSZCZĘCIU ŚLEDZTWA</div>
+      <form id="addSprawaForm">
+        <div class="form-group"><label>Sygnatura Akt (np. RSD-12/2026)</label><input type="text" id="sprawa_syg" class="form-control" required></div>
+        <div class="form-group"><label>Podejrzani</label><input type="text" id="sprawa_podejrzani" class="form-control" required></div>
+        <div class="form-group"><label>Opis / Hipotezy</label><textarea id="sprawa_opis" class="form-control" rows="3"></textarea></div>
+        <button type="submit" class="btn-sys danger">REJESTRUJ SPRAWĘ</button>
+      </form>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">AKTA ŚLEDZTW W TOKU</div>
+      <div id="sprawyList"></div>
+    </div>
+  </div>
+
+  <!-- SEKCJA 4: NAKAZY -->
+  <div id="tab-nakazy" class="tab-content" style="display:none;">
+    <div class="nav-panel" style="margin-bottom: 10px;">
+      <button class="btn-sys danger" onclick="toggleForm('form-nakaz')">➕ Wydaj Nakaz</button>
+    </div>
+
+    <div id="form-nakaz" class="panel" style="display:none;">
+      <div class="panel-header">📜 NAKAZ PROKURATORSKI / SĄDOWY</div>
+      <form id="addNakazForm">
+        <div class="form-group"><label>Prokurator Wydający</label><input type="text" id="nakaz_prokurator" class="form-control" required></div>
+        <div class="form-group"><label>Cel Nakazu (np. Przeszukanie, Aresztowanie)</label><input type="text" id="nakaz_cel" class="form-control" required></div>
+        <div class="form-group"><label>Link do Dokumentu / Sygnatura</label><input type="text" id="nakaz_link" class="form-control"></div>
+        <button type="submit" class="btn-sys danger">ZATWIERDŹ NAKAZ</button>
+      </form>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">REJESTR NAKAZÓW</div>
+      <div id="nakazyList"></div>
+    </div>
+  </div>
+
+  <!-- SEKCJA 5: ZGP -->
+  <div id="tab-organizacje" class="tab-content" style="display:none;">
+    <div class="nav-panel" style="margin-bottom: 10px;">
+      <button class="btn-sys danger" onclick="toggleForm('form-org')">➕ Rejestruj Grupę</button>
+    </div>
+
+    <div id="form-org" class="panel" style="display:none;">
+      <div class="panel-header">☣️ REJESTRACJA ZORGANIZOWANEJ GRUPY PRZESTĘPCZEJ</div>
+      <form id="addOrgForm">
+        <div class="form-group"><label>Nazwa Grupy</label><input type="text" id="org_nazwa" class="form-control" required></div>
+        <div class="form-group"><label>Typ (np. Kartel, Gang, Mafijna)</label><input type="text" id="org_typ" class="form-control" required></div>
+        <div class="form-group"><label>Struktura / Liderzy</label><input type="text" id="org_struktura" class="form-control"></div>
+        <div class="form-group"><label>Opis Działalności</label><textarea id="org_opis" class="form-control" rows="2"></textarea></div>
+        <button type="submit" class="btn-sys danger">ZAPISZ ZGP</button>
+      </form>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">REJESTR GRUP PRZESTĘPCZYCH</div>
+      <div id="orgsList"></div>
     </div>
   </div>
 
   <script>
     const DEFAULT_AVATAR = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="%23333"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>';
 
-    function pokazFormularz() {
-      const form = document.getElementById('panel-formularz');
-      form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+      document.getElementById(`tab-${tabId}`).style.display = 'block';
+      if(tabId === 'kartoteka') loadKartoteka();
+      if(tabId === 'denaci') loadDenaci();
+      if(tabId === 'sprawy') loadSprawy();
+      if(tabId === 'nakazy') loadNakazy();
+      if(tabId === 'organizacje') loadOrgs();
     }
 
-    // Konwersja pliku graficznego do Base64
+    function toggleForm(id) {
+      const el = document.getElementById(id);
+      el.style.display = el.style.display === 'none' ? 'block' : 'none';
+    }
+
     function toBase64(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -72,65 +163,180 @@
       });
     }
 
-    async function odswiezBaze() {
+    // LOADERS
+    async function loadKartoteka() {
       const res = await fetch('/api/osoby');
-      const osoby = await res.json();
-      const container = document.getElementById('listaOsob');
-      container.innerHTML = '';
-
-      if (osoby.length === 0) {
-        container.innerHTML = '<div style="color: #6b7280;">Brak zarejestrowanych kartotek w bazie WDS_Database.</div>';
-        return;
-      }
-
-      osoby.forEach(o => {
-        const foto = o.zdjecie && o.zdjecie !== '' ? o.zdjecie : DEFAULT_AVATAR;
-        container.innerHTML += `
+      const data = await res.json();
+      const list = document.getElementById('cardsList');
+      list.innerHTML = '';
+      data.forEach(o => {
+        const foto = o.zdjecie || DEFAULT_AVATAR;
+        list.innerHTML += `
           <div class="person-card">
-            <div class="photo-frame">
-              <img src="${foto}" onerror="this.src='${DEFAULT_AVATAR}'" alt="Sygnatura zdjęciowa">
-            </div>
+            <div class="photo-frame"><img src="${foto}" onerror="this.src='${DEFAULT_AVATAR}'"></div>
             <div class="card-info">
               <strong style="color:#fff; font-size:14px;">${o.imie} ${o.nazwisko}</strong><br>
-              <span style="color:#6b7280;">PESEL:</span> <code>${o.pesel}</code><br>
+              <small>PESEL: ${o.pesel}</small><br>
               <span class="status-tag">${o.status}</span>
+              <div style="margin-top:10px; display:flex; gap:5px; flex-wrap:wrap;">
+                <button class="btn-sys" style="font-size:10px; padding:3px 6px;" onclick="zmienStatus('${o.pesel}')">Status</button>
+                <button class="btn-sys danger" style="font-size:10px; padding:3px 6px;" onclick="usunOsobe('${o.pesel}')">Usuń</button>
+              </div>
             </div>
           </div>
         `;
       });
     }
 
-    document.getElementById('rejestracjaForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      
-      const imie = document.getElementById('imie').value;
-      const nazwisko = document.getElementById('nazwisko').value;
-      const pesel = document.getElementById('pesel').value;
-      const fileInput = document.getElementById('zdjecieInput');
-
-      let zdjecieBase64 = '';
-      if (fileInput.files.length > 0) {
-        zdjecieBase64 = await toBase64(fileInput.files[0]);
-      }
-
-      const res = await fetch('/api/osoby', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imie, nazwisko, pesel, zdjecieBase64 })
-      });
-
+    async function loadDenaci() {
+      const res = await fetch('/api/denaci');
       const data = await res.json();
-      if (data.success) {
-        alert('✅ Wpis został pomyślnie dodany do bazy WDS_Database.');
-        document.getElementById('rejestracjaForm').reset();
-        pokazFormularz();
-        odswiezBaze();
-      } else {
-        alert('❌ Błąd: ' + data.message);
-      }
-    });
+      const list = document.getElementById('denaciList');
+      list.innerHTML = data.map(d => `
+        <div style="border-bottom:1px solid #1e2838; padding:8px 0;">
+          <strong style="color:#991b1b;">💀 ${d.dane}</strong> (PESEL: ${d.pesel})<br>
+          <small style="color:#6b7280;">Przyczyna: ${d.opis} | Data: ${d.data}</small>
+        </div>
+      `).join('');
+    }
 
-    odswiezBaze();
+    async function loadSprawy() {
+      const res = await fetch('/api/sprawy');
+      const data = await res.json();
+      const list = document.getElementById('sprawyList');
+      list.innerHTML = data.map(s => `
+        <div style="border-bottom:1px solid #1e2838; padding:8px 0;">
+          <strong style="color:#c5a059;">🔎 SYGNATURA: ${s.sygnatura}</strong> [${s.status}]<br>
+          <small>Podejrzani: ${s.podejrzani}</small><br>
+          <small style="color:#6b7280;">Opis: ${s.opis}</small>
+        </div>
+      `).join('');
+    }
+
+    async function loadNakazy() {
+      const res = await fetch('/api/nakazy');
+      const data = await res.json();
+      const list = document.getElementById('nakazyList');
+      list.innerHTML = data.map(n => `
+        <div style="border-bottom:1px solid #1e2838; padding:8px 0;">
+          <strong>📜 CEL: ${n.cel}</strong> (Prokurator: ${n.prokurator})<br>
+          <small style="color:#6b7280;">Wydano: ${n.data} | Ref: ${n.link || 'Brak linku'}</small>
+        </div>
+      `).join('');
+    }
+
+    async function loadOrgs() {
+      const res = await fetch('/api/organizacje');
+      const data = await res.json();
+      const list = document.getElementById('orgsList');
+      list.innerHTML = data.map(o => `
+        <div style="border-bottom:1px solid #1e2838; padding:8px 0;">
+          <strong style="color:#991b1b;">☣️ GRUPA: ${o.nazwa}</strong> [${o.typ}]<br>
+          <small>Struktura: ${o.struktura}</small><br>
+          <small style="color:#6b7280;">Opis: ${o.opis}</small>
+        </div>
+      `).join('');
+    }
+
+    // ACTIONS
+    async function zmienStatus(pesel) {
+      const st = prompt("Wpisz nowy status (np. POSZUKIWANY, PODEJRZANY, CZYSTY):");
+      if(!st) return;
+      await fetch(`/api/osoby/${pesel}/status`, {
+        method: 'PATCH',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ status: st.toUpperCase() })
+      });
+      loadKartoteka();
+    }
+
+    async function usunOsobe(pesel) {
+      if(!confirm("Czy na pewno usunąć akta z bazy?")) return;
+      await fetch(`/api/osoby/${pesel}`, { method: 'DELETE' });
+      loadKartoteka();
+    }
+
+    // SUBMITS
+    document.getElementById('addOsobaForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const file = document.getElementById('add_zdjecie').files[0];
+      const zdjecieBase64 = file ? await toBase64(file) : '';
+      await fetch('/api/osoby', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          imie: document.getElementById('add_imie').value,
+          nazwisko: document.getElementById('add_nazwisko').value,
+          pesel: document.getElementById('add_pesel').value,
+          zdjecieBase64
+        })
+      });
+      toggleForm('form-osoba');
+      loadKartoteka();
+    };
+
+    document.getElementById('addDenatForm').onsubmit = async (e) => {
+      e.preventDefault();
+      await fetch('/api/denaci', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          imie_nazwisko: document.getElementById('denat_dane').value,
+          pesel: document.getElementById('denat_pesel').value,
+          przyczyna: document.getElementById('denat_przyczyna').value
+        })
+      });
+      toggleForm('form-denat');
+      loadDenaci();
+    };
+
+    document.getElementById('addSprawaForm').onsubmit = async (e) => {
+      e.preventDefault();
+      await fetch('/api/sprawy', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          sygnatura: document.getElementById('sprawa_syg').value,
+          podejrzani: document.getElementById('sprawa_podejrzani').value,
+          hipotezy: document.getElementById('sprawa_opis').value
+        })
+      });
+      toggleForm('form-sprawa');
+      loadSprawy();
+    };
+
+    document.getElementById('addNakazForm').onsubmit = async (e) => {
+      e.preventDefault();
+      await fetch('/api/nakazy', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          prokurator: document.getElementById('nakaz_prokurator').value,
+          cel: document.getElementById('nakaz_cel').value,
+          link: document.getElementById('nakaz_link').value
+        })
+      });
+      toggleForm('form-nakaz');
+      loadNakazy();
+    };
+
+    document.getElementById('addOrgForm').onsubmit = async (e) => {
+      e.preventDefault();
+      await fetch('/api/organizacje', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          nazwa: document.getElementById('org_nazwa').value,
+          typ: document.getElementById('org_typ').value,
+          struktura: document.getElementById('org_struktura').value,
+          opis: document.getElementById('org_opis').value
+        })
+      });
+      toggleForm('form-org');
+      loadOrgs();
+    };
+
+    loadKartoteka();
   </script>
 </body>
 </html>
