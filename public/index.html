@@ -3,147 +3,113 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KMP WDŚ - SYSTEM KARTOTEKI</title>
+  <title>KSIP / KMP WDŚ - Terminal Operacyjny</title>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    :root {
+      --police-blue: #002b49;
+      --police-light-blue: #005691;
+      --accent-yellow: #ffcc00;
+      --bg-dark: #0a0d12;
+      --panel-bg: #121820;
+      --border-color: #1e293b;
+      --text-main: #e2e8f0;
     }
-    body {
-      background-color: #05080a;
-      color: #00ff66;
-      font-family: 'Courier New', Courier, monospace;
-      padding: 20px;
-    }
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-      border: 2px solid #00ff66;
-      padding: 20px;
-      box-shadow: 0 0 15px rgba(0, 255, 102, 0.2);
-    }
-    header {
-      border-bottom: 2px solid #00ff66;
-      padding-bottom: 15px;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-    h1 {
-      font-size: 22px;
-      letter-spacing: 2px;
-    }
-    .sub-header {
-      font-size: 12px;
-      color: #00aa44;
-      margin-top: 5px;
-    }
-    .box {
-      border: 1px solid #00aa44;
-      padding: 15px;
-      margin-bottom: 20px;
-      background: rgba(0, 20, 5, 0.5);
-    }
-    .box-title {
-      font-weight: bold;
-      margin-bottom: 10px;
-      color: #00ff66;
-      border-bottom: 1px dashed #00aa44;
-      padding-bottom: 5px;
-    }
-    input, textarea, select, button {
-      background: #000;
-      color: #00ff66;
-      border: 1px solid #00ff66;
-      font-family: 'Courier New', Courier, monospace;
-      padding: 8px;
-      margin: 6px 0;
-      width: 100%;
-      outline: none;
-    }
-    input:focus, textarea:focus, select:focus {
-      box-shadow: 0 0 5px #00ff66;
-    }
-    button {
-      cursor: pointer;
-      background: #003311;
-      font-weight: bold;
-      transition: 0.2s;
-    }
-    button:hover {
-      background: #006622;
-    }
-    .hidden {
-      display: none;
-    }
-    .record-item {
-      border: 1px solid #00aa44;
-      padding: 10px;
-      margin-top: 10px;
-      background: #000;
-    }
-    .record-header {
-      display: flex;
-      justify-content: space-between;
-      color: #fff;
-      margin-bottom: 5px;
-    }
-    .status-tag {
-      color: #ffcc00;
-      font-weight: bold;
-    }
-    .msg {
-      color: #ff3333;
-      margin-top: 5px;
-      font-size: 14px;
-    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background-color: var(--bg-dark); color: var(--text-main); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; }
+    .container { max-width: 950px; margin: 0 auto; background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); overflow: hidden; }
+    .pl-stripe { height: 4px; background: linear-gradient(90deg, #ffffff 50%, #dc2626 50%); }
+    .header { background: var(--police-blue); padding: 20px; display: flex; align-items: center; gap: 20px; border-bottom: 3px solid var(--police-light-blue); }
+    .header-logo { width: 60px; height: 60px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .header-title h1 { font-size: 20px; color: #fff; text-transform: uppercase; letter-spacing: 1px; }
+    .header-title h2 { font-size: 13px; color: #94a3b8; margin-top: 3px; font-weight: 400; }
+    .content { padding: 25px; }
+    .box { background: #0f172a; border: 1px solid var(--border-color); border-radius: 6px; padding: 20px; margin-bottom: 20px; }
+    .box-header { font-size: 14px; font-weight: bold; color: var(--accent-yellow); text-transform: uppercase; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #1e293b; padding-bottom: 8px; }
+    input, select, textarea { width: 100%; background: #020617; border: 1px solid #334155; color: #fff; padding: 10px; margin-bottom: 12px; border-radius: 4px; font-family: inherit; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--police-light-blue); }
+    .btn-group { display: flex; gap: 10px; }
+    button { background: var(--police-light-blue); color: #fff; border: none; padding: 10px 18px; font-weight: bold; border-radius: 4px; cursor: pointer; transition: background 0.2s; }
+    button:hover { background: #0284c7; }
+    button.btn-sec { background: #334155; }
+    button.btn-sec:hover { background: #475569; }
+    .hidden { display: none; }
+    .record-card { background: #020617; border-left: 4px solid var(--police-light-blue); border-radius: 4px; padding: 12px 15px; margin-top: 10px; }
+    .record-card.status-denat { border-left-color: #dc2626; }
+    .record-card.status-areszt { border-left-color: #f59e0b; }
+    .record-meta { display: flex; justify-content: space-between; font-size: 12px; color: #64748b; margin-top: 8px; border-top: 1px dashed #1e293b; padding-top: 5px; }
+    .badge-status { font-size: 11px; background: #1e293b; color: var(--accent-yellow); padding: 2px 6px; border-radius: 3px; }
+    .footer { text-align: center; padding: 15px; font-size: 11px; color: #475569; border-top: 1px solid var(--border-color); }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <header>
-    <h1>KOMENDA MIEJSKA POLICJI — WDŚ</h1>
-    <div class="sub-header">WYDZIAŁ DOCHODZENIOWO-ŚLEDCZY // BAZA DANYCH</div>
+  <div class="pl-stripe"></div>
+  
+  <header class="header">
+    <div class="header-logo">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#002b49" stroke-width="2">
+        <path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-5.45 9-12V7l-9-5z"/>
+        <path d="M12 6v12M8 10h8"/>
+      </svg>
+    </div>
+    <div class="header-title">
+      <h1>POLICJA — TERMINAL WDŚ</h1>
+      <h2>Krajowy System Informacyjny / Wersja Przeglądarkowa Bota</h2>
+    </div>
   </header>
 
-  <!-- PANEL AUTORYZACJI -->
-  <div id="auth-section" class="box">
-    <div class="box-title">[ AUTORYZACJA FUNKCJONARIUSZA ]</div>
-    <input type="text" id="username" placeholder="Identyfikator / Login">
-    <input type="password" id="password" placeholder="Hasło dostępu">
-    <button onclick="login()">ZALOGUJ DO SYSTEMU</button>
-    <button onclick="register()">ZAREJESTRUJ NOWE KONTO</button>
-    <div id="auth-msg" class="msg"></div>
+  <div class="content">
+
+    <!-- AUTORYZACJA -->
+    <div id="auth-section" class="box">
+      <div class="box-header">🔒 Dostęp do Terminala WDŚ</div>
+      <input type="text" id="username" placeholder="Identyfikator służbowy / Login">
+      <input type="password" id="password" placeholder="Hasło dostępu">
+      <div class="btn-group">
+        <button onclick="login()">ZALOGUJ SIĘ</button>
+        <button class="btn-sec" onclick="register()">UTWÓRZ KONTO</button>
+      </div>
+      <div id="auth-msg" style="color: #ef4444; margin-top: 10px; font-size: 13px;"></div>
+    </div>
+
+    <!-- PANEL OPERACYJNY BOT WDS -->
+    <div id="app-section" class="hidden">
+      <div class="box">
+        Zalogowany funkcjonariusz: <b id="user-display" style="color: #fff;"></b> | Dostęp: <b>PEŁNY Dostęp do Akt i Kartoteki</b>
+      </div>
+
+      <!-- ZARZĄDZANIE KARTOTEKĄ / AKTA -->
+      <div class="box">
+        <div class="box-header">📝 Obsługa Akt, Denatów i Ekspertyz</div>
+        <input type="text" id="rec-title" placeholder="Imię i Nazwisko / Identyfikator Osoby / Nr Sprawy">
+        
+        <select id="rec-status">
+          <option value="PODEJRZANY">PODEJRZANY</option>
+          <option value="TYMCZASOWO ARESZTOWANY">ZMIANA STATUSU: TYMCZASOWO ARESZTOWANY</option>
+          <option value="DODANO DENATA">NOWY DENAT / OGLĘDZINY ZWŁOK</option>
+          <option value="EKSPERTYZA KRYMINALISTYCZNA">DOŁĄCZ EKSPERTYZĘ KRYMINALISTYCZNĄ DO AKT</option>
+          <option value="PROTOKÓŁ PRZESŁUCHANIA">PROTOKÓŁ PRZESŁUCHANIA</option>
+          <option value="ŚWIADEK">ŚWIADEK</option>
+        </select>
+        
+        <textarea id="rec-content" rows="4" placeholder="Treść przesłuchania, wyniki oględzin zwłok lub opis dołączonej ekspertyzy kryminalistycznej..."></textarea>
+        <button onclick="addRecord()">ZAPISZ W BAZIE DANYCH AKT</button>
+      </div>
+
+      <!-- KARTOTEKA -->
+      <div class="box">
+        <div class="box-header">📂 Baza Danych Kartoteki i Przesłuchań</div>
+        <button class="btn-sec" onclick="loadRecords()" style="margin-bottom: 15px;">🔄 ODŚWIEŻ AKTA</button>
+        <div id="records-list"></div>
+      </div>
+    </div>
+
   </div>
 
-  <!-- PANEL GŁÓWNY SYSTEMU -->
-  <div id="app-section" class="hidden">
-    <div class="box">
-      ZALOGOWANY FUNKCJONARIUSZ: <b id="user-display" style="color: #fff;"></b>
-    </div>
-
-    <!-- FORMULARZ DODAWANIA WPISU -->
-    <div class="box">
-      <div class="box-title">[ NOWY PROTOKÓŁ / WPRIS DO KARTOTEKI ]</div>
-      <input type="text" id="rec-title" placeholder="Imię i Nazwisko / Nr Sprawy">
-      <select id="rec-status">
-        <option value="PODEJRZANY">PODEJRZANY</option>
-        <option value="SWIADEK">ŚWIADEK</option>
-        <option value="TYMCZASOWO ARESZTOWANY">TYMCZASOWO ARESZTOWANY</option>
-        <option value="DENAT">DENAT / OGLĘDZINY ZWŁOK</option>
-        <option value="MATERIAŁ DOWODOWY">EKSPERTYZA KRYMINALISTYCZNA</option>
-      </select>
-      <textarea id="rec-content" rows="4" placeholder="Treść przesłuchania, raportu lub wyników ekspertyzy..."></textarea>
-      <button onclick="addRecord()">WPROWADŹ DANE DO BAZY</button>
-    </div>
-
-    <!-- REJESTR KARTOTEKI -->
-    <div class="box">
-      <div class="box-title">[ BAZA DANYCH KARTOTEKI ]</div>
-      <button onclick="loadRecords()">ODŚWIEŻ REJESTR</button>
-      <div id="records-list"></div>
-    </div>
+  <div class="footer">
+    TERMINAL WDŚ — SYSTEM BAZY DANYCH KARTOTEKI, PRZESŁUCHAŃ I OGLĘDZIN ZWŁOK
   </div>
 </div>
 
@@ -202,14 +168,21 @@
     const list = document.getElementById('records-list');
     list.innerHTML = '';
     records.forEach(r => {
+      let statusClass = '';
+      if (r.status.includes('DENAT')) statusClass = 'status-denat';
+      if (r.status.includes('ARESZT')) statusClass = 'status-areszt';
+
       list.innerHTML += `
-        <div class="record-item">
-          <div class="record-header">
-            <span><b>${r.title}</b></span>
-            <span class="status-tag">[${r.status}]</span>
+        <div class="record-card ${statusClass}">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <strong style="color: #fff;">${r.title}</strong>
+            <span class="badge-status">${r.status}</span>
           </div>
-          <p style="color: #ccc; margin-bottom: 5px;">${r.content}</p>
-          <small style="color: #00aa44;">Wprowadził: ${r.created_by}</small>
+          <p style="color: #cbd5e1; font-size: 14px;">${r.content}</p>
+          <div class="record-meta">
+            <span>Sporządził: ${r.created_by}</span>
+            <span>KMP WDŚ / AKTA</span>
+          </div>
         </div>
       `;
     });
