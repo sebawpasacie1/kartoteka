@@ -31,7 +31,7 @@
     <nav class="bg-slate-950 border-b border-slate-800 sticky top-[73px] z-40">
         <div class="max-w-7xl mx-auto flex overflow-x-auto text-sm font-mono">
             <button onclick="switchTab('kartoteka')" id="btn-kartoteka" class="px-6 py-3 border-b-2 border-blue-500 text-blue-400 font-bold bg-slate-900/50">1. KARTOTEKA OBYWATELI</button>
-            <button onclick="switchTab('sprawy')" id="btn-sprawy" class="px-6 py-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition">2. R SPRAW</button>
+            <button onclick="switchTab('sprawy')" id="btn-sprawy" class="px-6 py-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition">2. REJESTR SPRAW</button>
             <button onclick="switchTab('nakazy')" id="btn-nakazy" class="px-6 py-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition">3. NAKAZY PROKURATORSKIE</button>
             <button onclick="switchTab('denaci')" id="btn-denaci" class="px-6 py-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition">4. REJESTR DENATÓW</button>
             <button onclick="switchTab('organizacje')" id="btn-organizacje" class="px-6 py-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition">5. STRUKTURY ORGANIZACYJNE</button>
@@ -118,7 +118,7 @@
         <section id="tab-sprawy" class="tab-content hidden space-y-4">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="bg-slate-950 p-5 rounded-xl border border-slate-800 h-fit space-y-3 font-mono text-sm">
-                    <h2 class="text-md font-bold text-amber-500 flex items-center gap-2"><i data-lucide="briefcase" class="w-4 h-4"></i> OTÓRZ NOWE POSTĘPOWANIE</h2>
+                    <h2 class="text-md font-bold text-amber-500 flex items-center gap-2"><i data-lucide="briefcase" class="w-4 h-4"></i> OTWÓRZ NOWE POSTĘPOWANIE</h2>
                     <div>
                         <label class="block text-xs text-slate-400 mb-1">Sygnatura / Nazwa sprawy</label>
                         <input type="text" id="sp-sygnatura" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-slate-200 focus:outline-none">
@@ -351,7 +351,7 @@
                     alert("Błąd zapisu notatki: " + data.error);
                 } else {
                     await loadAllData();
-                    alert("Uwagi operacyjne zostały pomyślnie zaktualizowane w MongoDB!");
+                    alert("Uwagi operacyjne zostały pomyślnie zaktualizowane w bazie danych!");
                 }
             } catch(e) {
                 console.error(e);
@@ -449,48 +449,106 @@
 
         async function deleteItem(endpoint, identifier) {
             if(!confirm("Czy na pewno chcesz usunąć ten wpis z bazy danych?")) return;
-            await fetch(`${API_URL}/${endpoint}/${identifier}`, { method: 'DELETE' });
+            await fetch(`${API_URL}/${endpoint}/${encodeURIComponent(identifier)}`, { method: 'DELETE' });
             await loadAllData();
         }
 
         async function submitObywatel() {
-            const body = { imie: document.getElementById('ob-imie').value, nazwisko: document.getElementById('ob-nazwisko').value, pesel: document.getElementById('ob-pesel').value, status: document.getElementById('ob-status').value, notatka_tajna: document.getElementById('ob-notatka').value };
-            if(await sendPost('kartoteka', body)) { document.getElementById('ob-imie').value=''; document.getElementById('ob-nazwisko').value=''; document.getElementById('ob-pesel').value=''; document.getElementById('ob-notatka').value=''; }
+            const body = { 
+                imie: document.getElementById('ob-imie').value, 
+                nazwisko: document.getElementById('ob-nazwisko').value, 
+                pesel: document.getElementById('ob-pesel').value, 
+                status: document.getElementById('ob-status').value,
+                notatka_tajna: document.getElementById('ob-notatka').value
+            };
+            if(!body.imie || !body.nazwisko || !body.pesel) return alert("Uzupełnij wymagane pola!");
+            if(await sendPost('kartoteka', body)) {
+                document.getElementById('ob-imie').value = '';
+                document.getElementById('ob-nazwisko').value = '';
+                document.getElementById('ob-pesel').value = '';
+                document.getElementById('ob-notatka').value = '';
+            }
         }
 
         async function submitDowod() {
-            const body = { pesel: document.getElementById('dowod-pesel').value, sygnatura: document.getElementById('dowod-sygnatura').value, opis: document.getElementById('dowod-opis').value };
-            if(await sendPost('dowody', body)) { document.getElementById('dowod-pesel').value=''; document.getElementById('dowod-sygnatura').value=''; document.getElementById('dowod-opis').value=''; }
+            const pesel = document.getElementById('dowod-pesel').value;
+            const body = {
+                sygnatura: document.getElementById('dowod-sygnatura').value,
+                opis: document.getElementById('dowod-opis').value
+            };
+            if(!pesel || !body.sygnatura || !body.opis) return alert("Uzupełnij PESEL, sygnaturę i opis dowodu!");
+            
+            const res = await fetch(`${API_URL}/kartoteka/${pesel}/dowody`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(body)
+            });
+            const data = await res.json();
+            if(data.error) alert("Błąd: " + data.error);
+            else {
+                document.getElementById('dowod-pesel').value = '';
+                document.getElementById('dowod-sygnatura').value = '';
+                document.getElementById('dowod-opis').value = '';
+                await loadAllData();
+            }
         }
 
         async function submitSprawa() {
-            const body = { sygnatura: document.getElementById('sp-sygnatura').value, podejrzani: document.getElementById('sp-podejrzani').value, status: document.getElementById('sp-stan').value, opis: document.getElementById('sp-opis').value };
-            if(await sendPost('sprawy', body)) { document.getElementById('sp-sygnatura').value=''; document.getElementById('sp-podejrzani').value=''; document.getElementById('sp-opis').value=''; }
+            const body = {
+                sygnatura: document.getElementById('sp-sygnatura').value,
+                podejrzani: document.getElementById('sp-podejrzani').value,
+                status: document.getElementById('sp-stan').value,
+                opis: document.getElementById('sp-opis').value
+            };
+            if(!body.sygnatura) return alert("Podaj sygnaturę sprawy!");
+            if(await sendPost('sprawy', body)) {
+                document.getElementById('sp-sygnatura').value = '';
+                document.getElementById('sp-podejrzani').value = '';
+                document.getElementById('sp-opis').value = '';
+            }
         }
 
         async function submitNakaz() {
-            const body = { prokurator: document.getElementById('nk-prokurator').value, cel: document.getElementById('nk-cel').value, link: document.getElementById('nk-link').value };
-            if(await sendPost('nakazy', body)) { document.getElementById('nk-prokurator').value=''; document.getElementById('nk-cel').value=''; document.getElementById('nk-link').value=''; }
+            const body = {
+                prokurator: document.getElementById('nk-prokurator').value,
+                cel: document.getElementById('nk-cel').value,
+                link: document.getElementById('nk-link').value
+            };
+            if(!body.cel || !body.prokurator) return alert("Uzupełnij dane nakazu!");
+            if(await sendPost('nakazy', body)) {
+                document.getElementById('nk-prokurator').value = '';
+                document.getElementById('nk-cel').value = '';
+                document.getElementById('nk-link').value = '';
+            }
         }
 
         async function submitDenat() {
-            const body = { dane: document.getElementById('dn-nazwisko').value, pesel: document.getElementById('dn-pesel').value, opis: document.getElementById('dn-opis').value };
-            if(await sendPost('denaci', body)) { document.getElementById('dn-nazwisko').value=''; document.getElementById('dn-pesel').value=''; document.getElementById('dn-opis').value=''; }
+            const body = {
+                dane: document.getElementById('dn-nazwisko').value,
+                pesel: document.getElementById('dn-pesel').value,
+                opis: document.getElementById('dn-opis').value
+            };
+            if(!body.dane) return alert("Podaj dane denata!");
+            if(await sendPost('denaci', body)) {
+                document.getElementById('dn-nazwisko').value = '';
+                document.getElementById('dn-pesel').value = '';
+                document.getElementById('dn-opis').value = '';
+            }
         }
 
         async function submitOrganizacja() {
-            const body = { 
-                nazwa: document.getElementById('org-nazwa').value, 
-                typ: document.getElementById('org-typ').value, 
-                struktura: document.getElementById('org-struktura').value, 
-                opis: document.getElementById('org-opis').value 
+            const body = {
+                nazwa: document.getElementById('org-nazwa').value,
+                typ: document.getElementById('org-typ').value,
+                struktura: document.getElementById('org-struktura').value,
+                opis: document.getElementById('org-opis').value
             };
-            if(!body.nazwa || !body.typ || !body.struktura) { alert("Wypełnij wymagane pola organizacji!"); return; }
-            if(await sendPost('organizacje', body)) { 
-                document.getElementById('org-nazwa').value=''; 
-                document.getElementById('org-typ').value=''; 
-                document.getElementById('org-struktura').value=''; 
-                document.getElementById('org-opis').value=''; 
+            if(!body.nazwa || !body.typ) return alert("Uzupełnij nazwę i typ organizacji!");
+            if(await sendPost('organizacje', body)) {
+                document.getElementById('org-nazwa').value = '';
+                document.getElementById('org-typ').value = '';
+                document.getElementById('org-struktura').value = '';
+                document.getElementById('org-opis').value = '';
             }
         }
     </script>
