@@ -1,0 +1,188 @@
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+:root {
+  --bg-main: #0a0d12;
+  --panel-bg: #111620;
+  --panel-border: #1e2838;
+  --header-bg: #0d1b2a;
+  --text-main: #d1d5db;
+  --text-muted: #6b7280;
+  --accent-gold: #c5a059;
+  --accent-red: #991b1b;
+  --accent-blue: #1d4ed8;
+  --font-mono: 'Share Tech Mono', 'Courier New', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-mono) !important;
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  padding: 15px;
+}
+
+/* BANER URZĘDOWY */
+.police-header {
+  background: var(--header-bg);
+  border: 2px solid var(--panel-border);
+  border-left: 6px solid var(--accent-red);
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.police-title h1 {
+  font-size: 20px;
+  color: #fff;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.police-title h2 {
+  font-size: 12px;
+  color: var(--accent-gold);
+  margin-top: 4px;
+  letter-spacing: 1px;
+}
+
+.system-stamp {
+  border: 1px solid var(--accent-red);
+  color: var(--accent-red);
+  padding: 5px 10px;
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+/* PANEL NADAWCZY / PRZYCISKI */
+.nav-panel {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  padding: 10px;
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.btn-sys {
+  background: #182232;
+  color: var(--text-main);
+  border: 1px solid var(--panel-border);
+  padding: 8px 14px;
+  font-size: 12px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all 0.2s;
+}
+
+.btn-sys:hover {
+  background: var(--accent-blue);
+  color: #fff;
+}
+
+.btn-sys.danger {
+  border-color: var(--accent-red);
+}
+
+.btn-sys.danger:hover {
+  background: var(--accent-red);
+}
+
+/* KARTOTEKA / GRID */
+.panel {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.panel-header {
+  font-size: 14px;
+  color: var(--accent-gold);
+  border-bottom: 1px dashed var(--panel-border);
+  padding-bottom: 8px;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+}
+
+.grid-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 15px;
+}
+
+.person-card {
+  background: #080b10;
+  border: 1px solid var(--panel-border);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.photo-frame {
+  width: 100%;
+  height: 200px;
+  background: #000;
+  border: 1px solid #222;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.photo-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-info {
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.status-tag {
+  display: inline-block;
+  padding: 2px 6px;
+  background: var(--accent-gold);
+  color: #000;
+  font-weight: bold;
+  font-size: 10px;
+  margin-top: 5px;
+}
+
+/* FORMULARZE */
+.form-group {
+  margin-bottom: 12px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+
+.form-control {
+  width: 100%;
+  background: #05070a;
+  border: 1px solid var(--panel-border);
+  color: #fff;
+  padding: 8px;
+  font-size: 12px;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--accent-gold);
+}
