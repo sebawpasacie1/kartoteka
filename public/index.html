@@ -3,191 +3,260 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KSIP / KMP WDŚ - Terminal Operacyjny</title>
-  <style>
-    :root {
-      --police-blue: #002b49;
-      --police-light-blue: #005691;
-      --accent-yellow: #ffcc00;
-      --bg-dark: #0a0d12;
-      --panel-bg: #121820;
-      --border-color: #1e293b;
-      --text-main: #e2e8f0;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background-color: var(--bg-dark); color: var(--text-main); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; }
-    .container { max-width: 950px; margin: 0 auto; background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); overflow: hidden; }
-    .pl-stripe { height: 4px; background: linear-gradient(90deg, #ffffff 50%, #dc2626 50%); }
-    .header { background: var(--police-blue); padding: 20px; display: flex; align-items: center; gap: 20px; border-bottom: 3px solid var(--police-light-blue); }
-    .header-logo { width: 60px; height: 60px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .header-title h1 { font-size: 20px; color: #fff; text-transform: uppercase; letter-spacing: 1px; }
-    .header-title h2 { font-size: 13px; color: #94a3b8; margin-top: 3px; font-weight: 400; }
-    .content { padding: 25px; }
-    .box { background: #0f172a; border: 1px solid var(--border-color); border-radius: 6px; padding: 20px; margin-bottom: 20px; }
-    .box-header { font-size: 14px; font-weight: bold; color: var(--accent-yellow); text-transform: uppercase; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #1e293b; padding-bottom: 8px; }
-    input, select, textarea { width: 100%; background: #020617; border: 1px solid #334155; color: #fff; padding: 10px; margin-bottom: 12px; border-radius: 4px; font-family: inherit; }
-    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--police-light-blue); }
-    .btn-group { display: flex; gap: 10px; }
-    button { background: var(--police-light-blue); color: #fff; border: none; padding: 10px 18px; font-weight: bold; border-radius: 4px; cursor: pointer; transition: background 0.2s; }
-    button:hover { background: #0284c7; }
-    button.btn-sec { background: #334155; }
-    button.btn-sec:hover { background: #475569; }
-    .hidden { display: none; }
-    .record-card { background: #020617; border-left: 4px solid var(--police-light-blue); border-radius: 4px; padding: 12px 15px; margin-top: 10px; }
-    .record-card.status-denat { border-left-color: #dc2626; }
-    .record-card.status-areszt { border-left-color: #f59e0b; }
-    .record-meta { display: flex; justify-content: space-between; font-size: 12px; color: #64748b; margin-top: 8px; border-top: 1px dashed #1e293b; padding-top: 5px; }
-    .badge-status { font-size: 11px; background: #1e293b; color: var(--accent-yellow); padding: 2px 6px; border-radius: 3px; }
-    .footer { text-align: center; padding: 15px; font-size: 11px; color: #475569; border-top: 1px solid var(--border-color); }
-  </style>
+  <title>Terminal WDŚ // Policja</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<div class="container">
-  <div class="pl-stripe"></div>
-  
+  <!-- BANER POLICJA -->
   <header class="header">
-    <div class="header-logo">
-      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#002b49" stroke-width="2">
-        <path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-5.45 9-12V7l-9-5z"/>
-        <path d="M12 6v12M8 10h8"/>
-      </svg>
-    </div>
-    <div class="header-title">
-      <h1>POLICJA — TERMINAL WDŚ</h1>
-      <h2>Krajowy System Informacyjny / Wersja Przeglądarkowa Bota</h2>
+    <div class="banner">
+      <div class="logo-container">
+        <img src="https://i.imgur.com/vH1M4yU.png" alt="Gwiazda Policyjna" class="logo-img">
+        <div>
+          <h1 class="title-main">KOMENDA MIEJSKA POLICJI</h1>
+          <h2 class="title-sub">WYDZIAŁ DOCHODZENIOWO-ŚLEDCZY // TERMINAL KSIP</h2>
+        </div>
+      </div>
+      <div class="brand-policja">POLICJA</div>
     </div>
   </header>
 
-  <div class="content">
-
-    <!-- AUTORYZACJA -->
-    <div id="auth-section" class="box">
-      <div class="box-header">🔒 Dostęp do Terminala WDŚ</div>
-      <input type="text" id="username" placeholder="Identyfikator służbowy / Login">
-      <input type="password" id="password" placeholder="Hasło dostępu">
-      <div class="btn-group">
-        <button onclick="login()">ZALOGUJ SIĘ</button>
-        <button class="btn-sec" onclick="register()">UTWÓRZ KONTO</button>
-      </div>
-      <div id="auth-msg" style="color: #ef4444; margin-top: 10px; font-size: 13px;"></div>
+  <div class="container">
+    <!-- Nawigacja Modułów -->
+    <div class="nav-buttons">
+      <button class="btn btn-primary" onclick="pokazSekcje('osoby')">🔎 Wyszukaj Osobę / Akta</button>
+      <button class="btn btn-secondary" onclick="otworzModal('modal-rejestracja')">➕ Załóż Akta Osobowe</button>
+      <button class="btn btn-danger" onclick="pokazSekcje('denaci')">🔬 Protokoły Sekcji / Zwłoki</button>
+      <button class="btn btn-primary" onclick="pokazSekcje('sprawy')">📂 Śledztwa / Sprawy</button>
+      <button class="btn btn-warning" onclick="pokazSekcje('podejrzani')">🕵️ Lista Podejrzanych</button>
+      <button class="btn btn-danger" onclick="pokazSekcje('poszukiwani')">⚠️ Poszukiwani</button>
+      <button class="btn btn-success" onclick="pokazSekcje('nakazy')">⚖️ Nakazy / Postanowienia</button>
+      <button class="btn btn-secondary" onclick="pokazSekcje('organizacje')">🏛️ Grupy Przestępcze (ZGP)</button>
     </div>
 
-    <!-- PANEL OPERACYJNY BOT WDS -->
-    <div id="app-section" class="hidden">
-      <div class="box">
-        Zalogowany funkcjonariusz: <b id="user-display" style="color: #fff;"></b> | Dostęp: <b>PEŁNY Dostęp do Akt i Kartoteki</b>
-      </div>
-
-      <!-- ZARZĄDZANIE KARTOTEKĄ / AKTA -->
-      <div class="box">
-        <div class="box-header">📝 Obsługa Akt, Denatów i Ekspertyz</div>
-        <input type="text" id="rec-title" placeholder="Imię i Nazwisko / Identyfikator Osoby / Nr Sprawy">
-        
-        <select id="rec-status">
-          <option value="PODEJRZANY">PODEJRZANY</option>
-          <option value="TYMCZASOWO ARESZTOWANY">ZMIANA STATUSU: TYMCZASOWO ARESZTOWANY</option>
-          <option value="DODANO DENATA">NOWY DENAT / OGLĘDZINY ZWŁOK</option>
-          <option value="EKSPERTYZA KRYMINALISTYCZNA">DOŁĄCZ EKSPERTYZĘ KRYMINALISTYCZNĄ DO AKT</option>
-          <option value="PROTOKÓŁ PRZESŁUCHANIA">PROTOKÓŁ PRZESŁUCHANIA</option>
-          <option value="ŚWIADEK">ŚWIADEK</option>
+    <!-- WIDOK: OSOBY -->
+    <div id="sekcja-osoby" class="panel">
+      <div class="panel-header">
+        <span>🔎 KARTOTEKA OSOBOWA</span>
+        <select id="select-osoba" class="form-control" style="width: auto;" onchange="ladujProfilOsoby(this.value)">
+          <option value="">-- Wybierz osobę z listy --</option>
         </select>
-        
-        <textarea id="rec-content" rows="4" placeholder="Treść przesłuchania, wyniki oględzin zwłok lub opis dołączonej ekspertyzy kryminalistycznej..."></textarea>
-        <button onclick="addRecord()">ZAPISZ W BAZIE DANYCH AKT</button>
       </div>
-
-      <!-- KARTOTEKA -->
-      <div class="box">
-        <div class="box-header">📂 Baza Danych Kartoteki i Przesłuchań</div>
-        <button class="btn-sec" onclick="loadRecords()" style="margin-bottom: 15px;">🔄 ODŚWIEŻ AKTA</button>
-        <div id="records-list"></div>
-      </div>
+      <div id="profil-osoby-details">Wybierz osobę z listy wyżej, aby wyświetlić pełne akta operacyjne.</div>
     </div>
 
+    <!-- WIDOK: DENACI -->
+    <div id="sekcja-denaci" class="panel" style="display:none;">
+      <div class="panel-header">
+        <span>💀 BAZA ANATOMOPATOLOGICZNA (REJESTR ZGONÓW)</span>
+        <button class="btn btn-danger" onclick="otworzModal('modal-denat')">➕ Nowy Protokół Sekcji</button>
+      </div>
+      <div id="lista-denatow" class="grid"></div>
+    </div>
+
+    <!-- WIDOK: SPRAWY -->
+    <div id="sekcja-sprawy" class="panel" style="display:none;">
+      <div class="panel-header">
+        <span>📂 REJESTR SPRAW I ŚLEDZTW (DS)</span>
+        <button class="btn btn-primary" onclick="otworzModal('modal-sprawa')">➕ Załóż Nowe Śledztwo</button>
+      </div>
+      <div id="lista-spraw" class="grid"></div>
+    </div>
+
+    <!-- WIDOK: PODEJRZANI -->
+    <div id="sekcja-podejrzani" class="panel" style="display:none;">
+      <div class="panel-header">👥 OSKARŻENI I PODEJRZANI W ŚLEDZTWACH</div>
+      <div id="lista-podejrzanych" class="grid"></div>
+    </div>
+
+    <!-- WIDOK: POSZUKIWANI -->
+    <div id="sekcja-poszukiwani" class="panel" style="display:none;">
+      <div class="panel-header">🚨 LISTY GOŃCZE // AKTYWNE POSZUKIWANIA</div>
+      <div id="lista-poszukiwanych" class="grid"></div>
+    </div>
+
+    <!-- WIDOK: NAKAZY -->
+    <div id="sekcja-nakazy" class="panel" style="display:none;">
+      <div class="panel-header">
+        <span>📜 POSTANOWIENIA I NAKAZY PROKURATORSKIE</span>
+        <button class="btn btn-success" onclick="otworzModal('modal-nakaz')">➕ Nowe Postanowienie</button>
+      </div>
+      <div id="lista-nakazow" class="grid"></div>
+    </div>
+
+    <!-- WIDOK: ORGANIZACJE -->
+    <div id="sekcja-organizacje" class="panel" style="display:none;">
+      <div class="panel-header">
+        <span>🏛️ ROZPRACOWANIA ZORGANIZOWANYCH GRUP PRZESTĘPCZYCH (ZGP)</span>
+        <button class="btn btn-secondary" onclick="otworzModal('modal-organizacja')">➕ Rozpracuj Nową Grupę</button>
+      </div>
+      <div id="lista-organizacji" class="grid"></div>
+    </div>
   </div>
 
-  <div class="footer">
-    TERMINAL WDŚ — SYSTEM BAZY DANYCH KARTOTEKI, PRZESŁUCHAŃ I OGLĘDZIN ZWŁOK
-  </div>
-</div>
-
-<script>
-  async function login() {
-    const res = await fetch('/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        username: document.getElementById('username').value,
-        password: document.getElementById('password').value
-      })
-    });
-    const data = await res.json();
-    if (data.success) {
-      document.getElementById('auth-section').classList.add('hidden');
-      document.getElementById('app-section').classList.remove('hidden');
-      document.getElementById('user-display').innerText = data.username;
-      loadRecords();
-    } else {
-      document.getElementById('auth-msg').innerText = data.message;
-    }
-  }
-
-  async function register() {
-    const res = await fetch('/api/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        username: document.getElementById('username').value,
-        password: document.getElementById('password').value
-      })
-    });
-    const data = await res.json();
-    document.getElementById('auth-msg').innerText = data.message;
-  }
-
-  async function addRecord() {
-    await fetch('/api/records', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        title: document.getElementById('rec-title').value,
-        status: document.getElementById('rec-status').value,
-        content: document.getElementById('rec-content').value
-      })
-    });
-    document.getElementById('rec-title').value = '';
-    document.getElementById('rec-content').value = '';
-    loadRecords();
-  }
-
-  async function loadRecords() {
-    const res = await fetch('/api/records');
-    const records = await res.json();
-    const list = document.getElementById('records-list');
-    list.innerHTML = '';
-    records.forEach(r => {
-      let statusClass = '';
-      if (r.status.includes('DENAT')) statusClass = 'status-denat';
-      if (r.status.includes('ARESZT')) statusClass = 'status-areszt';
-
-      list.innerHTML += `
-        <div class="record-card ${statusClass}">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-            <strong style="color: #fff;">${r.title}</strong>
-            <span class="badge-status">${r.status}</span>
-          </div>
-          <p style="color: #cbd5e1; font-size: 14px;">${r.content}</p>
-          <div class="record-meta">
-            <span>Sporządził: ${r.created_by}</span>
-            <span>KMP WDŚ / AKTA</span>
-          </div>
+  <!-- MODAL: Załóż Akta Osobowe -->
+  <div id="modal-rejestracja" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">➕ Zakładanie Kartoteki Osobowej</div>
+      <form onsubmit="zapiszOsobe(event)">
+        <div class="form-group"><label>Imię</label><input type="text" id="reg-imie" class="form-control" required></div>
+        <div class="form-group"><label>Nazwisko</label><input type="text" id="reg-nazwisko" class="form-control" required></div>
+        <div class="form-group"><label>PESEL</label><input type="text" id="reg-pesel" class="form-control" required></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="zamknijModale()">Anuluj</button>
+          <button type="submit" class="btn btn-success">Zapisz Akta</button>
         </div>
-      `;
-    });
-  }
-</script>
+      </form>
+    </div>
+  </div>
 
+  <!-- MODAL: Zmiana Statusu -->
+  <div id="modal-status" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">🔄 Zmiana Statusu Śledczego</div>
+      <form onsubmit="zapiszStatus(event)">
+        <input type="hidden" id="status-pesel">
+        <div class="form-group">
+          <label>Wybierz nowy status</label>
+          <select id="status-select" class="form-control">
+            <option value="CZYSTY">CZYSTY</option>
+            <option value="PODEJRZANY">PODEJRZANY</option>
+            <option value="TYMCZASOWO ARESZTOWANY">TYMCZASOWO ARESZTOWANY</option>
+            <option value="POSZUKIWANY">POSZUKIWANY</option>
+            <option value="OSKARŻONY">OSKARŻONY</option>
+            <option value="ŚWIADEK KORONNY">ŚWIADEK KORONNY</option>
+            <option value="DENAT">DENAT</option>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="zamknijModale()">Anuluj</button>
+          <button type="submit" class="btn btn-success">Zaktualizuj Status</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Areszt / Kaucja -->
+  <div id="modal-areszt" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">⚖️ Tymczasowe Aresztowanie / Środek Zapobiegawczy</div>
+      <form onsubmit="zapiszAreszt(event)">
+        <input type="hidden" id="areszt-pesel">
+        <div class="form-group"><label>Zarzuty Prokuratorskie / Śledcze</label><textarea id="areszt-zarzuty" class="form-control" required></textarea></div>
+        <div class="form-group"><label>Środek Zapobiegawczy (np. TA 3 miesiące, Kaucja $100k)</label><input type="text" id="areszt-srodek" class="form-control" required></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="zamknijModale()">Anuluj</button>
+          <button type="submit" class="btn btn-danger">Zastosuj</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Dodaj Dowód -->
+  <div id="modal-dowod" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">🔬 Materiał Dowodowy / Ekspertyza</div>
+      <form onsubmit="zapiszDowod(event)">
+        <input type="hidden" id="dowod-pesel">
+        <div class="form-group"><label>Sygnatura Dowodu (np. MAT/2026/01)</label><input type="text" id="dowod-sygnatura" class="form-control" required></div>
+        <div class="form-group"><label>Ekspertyza Kryminalistyczna</label><textarea id="dowod-analiza" class="form-control" required></textarea></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="zamknijModale()">Anuluj</button>
+          <button type="submit" class="btn btn-primary">Dołącz do Akt</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Tajne Akta / Notatka Operacyjna -->
+  <div id="modal-notatka" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">🕵️ Tajne Akta Operacyjne</div>
+      <form onsubmit="zapiszNotatke(event)">
+        <input type="hidden" id="notatka-pesel">
+        <div class="form-group"><label>Notatka Operacyjna / Zeznania Informatora</label><textarea id="notatka-tresc" class="form-control" required></textarea></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="zamknijModale()">Anuluj</button>
+          <button type="submit" class="btn btn-success">Zapisz Wpis</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Sekcja Zwłok -->
+  <div id="modal-denat" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">💀 Protokół Sekcji Zwłok</div>
+      <form onsubmit="zapiszDenata(event)">
+        <div class="form-group"><label>Tożsamość (Imię i Nazwisko / NN)</label><input type="text" id="denat-dane" class="form-control" required></div>
+        <div class="form-group"><label>PESEL (lub wpisz 'NIEZNANY')</label><input type="text" id="denat-pesel" class="form-control" required></div>
+        <div class="form-group"><label>Wstępna Przyczyna Śmierci / Ślady</label><textarea id="denat-przyczyna" class="form-control" required></textarea></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="zamknijModale()">Anuluj</button>
+          <button type="submit" class="btn btn-danger">Dodaj Protokół</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Nowa Sprawa -->
+  <div id="modal-sprawa" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">📂 Rejestracja Nowego Śledztwa</div>
+      <form onsubmit="zapiszSprawe(event)">
+        <div class="form-group"><label>Sygnatura Sprawy (np. DS/2026/102)</label><input type="text" id="sprawa-sygnatura" class="form-control" required></div>
+        <div class="form-group"><label>Główni Podejrzani / Grupy</label><input type="text" id="sprawa-podejrzani" class="form-control" required></div>
+        <div class="form-group"><label>Status Sprawy</label>
+          <select id="sprawa-status" class="form-control">
+            <option value="W TOKU">W TOKU</option>
+            <option value="UMORZONA">UMORZONA</option>
+            <option value="ZAMKNIĘTA">ZAMKNIĘTA</option>
+            <option value="ZAWIESZONA">ZAWIESZONA</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Hipotezy i Ustalenia Śledcze</label><textarea id="sprawa-hipotezy" class="form-control" required></textarea></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="zamknijModale()">Anuluj</button>
+          <button type="submit" class="btn btn-primary">Wszcznij Śledztwo</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Nowy Nakaz -->
+  <div id="modal-nakaz" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">📜 Rejestracja Postanowienia Prokuratorskiego</div>
+      <form onsubmit="zapiszNakaz(event)">
+        <div class="form-group"><label>Organ / Prokurator Wydający</label><input type="text" id="nakaz-prokurator" class="form-control" required></div>
+        <div class="form-group"><label>Cel Nakazu (Kogo/czego dotyczy)</label><input type="text" id="nakaz-cel" class="form-control" required></div>
+        <div class="form-group"><label>Link do Dokumentacji / Skanu</label><input type="url" id="nakaz-link" class="form-control" required></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="zamknijModale()">Anuluj</button>
+          <button type="submit" class="btn btn-success">Zarejestruj Nakaz</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Nowa Grupa Przestępcza -->
+  <div id="modal-organizacja" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">🏛️ Rozpracowanie Grupy Przestępczej</div>
+      <form onsubmit="zapiszOrganizacje(event)">
+        <div class="form-group"><label>Nazwa Grupy / Gangu</label><input type="text" id="org-nazwa" class="form-control" required></div>
+        <div class="form-group"><label>Profil Przestępczy (Narkotyki, Broń itp.)</label><input type="text" id="org-typ" class="form-control" placeholder="np. NARKOTYKI, BROŃ" required></div>
+        <div class="form-group"><label>Struktura i Członkowie</label><textarea id="org-struktura" class="form-control" placeholder="Boss: XYZ..." required></textarea></div>
+        <div class="form-group"><label>Strefa Wpływów / Ustalenia</label><textarea id="org-opis" class="form-control" required></textarea></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="zamknijModale()">Anuluj</button>
+          <button type="submit" class="btn btn-secondary">Zapisz Rozpracowanie</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
 </body>
 </html>
