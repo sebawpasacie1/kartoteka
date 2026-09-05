@@ -2,98 +2,135 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8">
-  <title>WDŚ - WYDZIAŁ DOCHODZENIOWO-ŚLEDCZY</title>
-  <link rel="stylesheet" href="style.css">
+  <title>KSIP // Wydział Dochodzeniowo-Śledczy</title>
+
+  <!-- Wymuszenie braku pamięci podręcznej dla css -->
+  <link rel="stylesheet" href="style.css?v=2.0">
 </head>
 <body>
 
-  <header>
-    <h1>SYSTEM EWIDENCJI OPERACYJNEJ WDŚ</h1>
-    <div class="sub-header">TAJNE / KLAUZULA OGRANICZONA</div>
-  </header>
-
-  <div class="grid-container">
-    <!-- FORMULARZ REJESTRACJI -->
-    <div class="panel">
-      <h2>[+] REJESTRACJA PODMIOTU</h2>
-      <form id="addPersonForm" enctype="multipart/form-data">
-        <label>Imię</label>
-        <input type="text" name="imie" required autocomplete="off">
-
-        <label>Nazwisko</label>
-        <input type="text" name="nazwisko" required autocomplete="off">
-
-        <label>Numer PESEL</label>
-        <input type="text" name="pesel" maxlength="11" required autocomplete="off">
-
-        <label>Plik zdjęcia (Lokalnie)</label>
-        <input type="file" name="zdjecie_file" accept="image/*">
-
-        <label>LUB URL do zdjęcia</label>
-        <input type="url" name="zdjecie_url" placeholder="https://...">
-
-        <button type="submit">ZAREJESTRUJ W BAZIE</button>
-      </form>
+  <div class="police-header">
+    <div class="police-title">
+      <h1>KOMENDA MIEJSKA POLICJI</h1>
+      <h2>KRAJOWY SYSTEM INFORMACYJNY POLICJI // TERMINAL WDŚ</h2>
     </div>
+    <div class="system-stamp">ZASTRZEŻONE / MSWiA</div>
+  </div>
 
-    <!-- KARTOTEKA -->
-    <div class="panel">
-      <h2>[=] REJESTR KARTOTEK OSOBOWYCH</h2>
-      <div id="cardsList" class="cards-grid">
-        <!-- Karty ładowane dynamicznie -->
+  <div class="nav-panel">
+    <button class="btn-sys" onclick="odswiezBaze()">🔄 Odśwież Dane</button>
+    <button class="btn-sys danger" onclick="pokazFormularz()">➕ Nowy Wpis Osobowy</button>
+  </div>
+
+  <!-- FORMULARZ REJESTRACJI -->
+  <div id="panel-formularz" class="panel" style="display: none;">
+    <div class="panel-header">📑 KARTA REJESTRACYJNA OSOBY</div>
+    <form id="rejestracjaForm">
+      <div class="form-group">
+        <label>Imię</label>
+        <input type="text" id="imie" class="form-control" required autocomplete="off">
       </div>
+      <div class="form-group">
+        <label>Nazwisko</label>
+        <input type="text" id="nazwisko" class="form-control" required autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label>Numer PESEL</label>
+        <input type="text" id="pesel" class="form-control" maxlength="11" required autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label>Wgraj zdjęcie (Zostanie zapisane w bazie MongoDB)</label>
+        <input type="file" id="zdjecieInput" class="form-control" accept="image/*">
+      </div>
+      <button type="submit" class="btn-sys danger">ZAPISZ W BAZIE WDS_DATABASE</button>
+    </form>
+  </div>
+
+  <!-- BAZA DANYCH -->
+  <div class="panel">
+    <div class="panel-header">🗄️ SKOROWIDZ OSOBOWY (WDS_DATABASE)</div>
+    <div id="listaOsob" class="grid-cards">
+      <!-- Wpisy ładowane dynamicznie -->
     </div>
   </div>
 
   <script>
-    const DEFAULT_AVATAR = 'https://via.placeholder.com/150/000000/FFFFFF?text=BRAK+ZDJECIA';
+    const DEFAULT_AVATAR = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="%23333"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>';
 
-    async function loadOsoby() {
-      const res = await fetch('/api/osoby');
-      const data = await res.json();
-      const container = document.getElementById('cardsList');
-      container.innerHTML = '';
+    function pokazFormularz() {
+      const form = document.getElementById('panel-formularz');
+      form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    }
 
-      data.forEach(osoba => {
-        const card = document.createElement('div');
-        card.className = 'person-card';
-        
-        // Zabezpieczenie przed brakiem/błędem zdjęcia
-        const imgSrc = osoba.zdjecie ? osoba.zdjecie : DEFAULT_AVATAR;
-
-        card.innerHTML = `
-          <div class="photo-container">
-            <img src="${imgSrc}" onerror="this.onerror=null; this.src='${DEFAULT_AVATAR}';" alt="Fotografia operacyjna">
-          </div>
-          <div class="info">
-            <strong>${osoba.imie} ${osoba.nazwisko}</strong><br>
-            <small>PESEL: ${osoba.pesel}</small><br>
-            <span class="status-badge">${osoba.status}</span>
-          </div>
-        `;
-        container.appendChild(card);
+    // Konwersja pliku graficznego do Base64
+    function toBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
       });
     }
 
-    document.getElementById('addPersonForm').addEventListener('submit', async (e) => {
+    async function odswiezBaze() {
+      const res = await fetch('/api/osoby');
+      const osoby = await res.json();
+      const container = document.getElementById('listaOsob');
+      container.innerHTML = '';
+
+      if (osoby.length === 0) {
+        container.innerHTML = '<div style="color: #6b7280;">Brak zarejestrowanych kartotek w bazie WDS_Database.</div>';
+        return;
+      }
+
+      osoby.forEach(o => {
+        const foto = o.zdjecie && o.zdjecie !== '' ? o.zdjecie : DEFAULT_AVATAR;
+        container.innerHTML += `
+          <div class="person-card">
+            <div class="photo-frame">
+              <img src="${foto}" onerror="this.src='${DEFAULT_AVATAR}'" alt="Sygnatura zdjęciowa">
+            </div>
+            <div class="card-info">
+              <strong style="color:#fff; font-size:14px;">${o.imie} ${o.nazwisko}</strong><br>
+              <span style="color:#6b7280;">PESEL:</span> <code>${o.pesel}</code><br>
+              <span class="status-tag">${o.status}</span>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    document.getElementById('rejestracjaForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const formData = new FormData(e.target);
+      
+      const imie = document.getElementById('imie').value;
+      const nazwisko = document.getElementById('nazwisko').value;
+      const pesel = document.getElementById('pesel').value;
+      const fileInput = document.getElementById('zdjecieInput');
+
+      let zdjecieBase64 = '';
+      if (fileInput.files.length > 0) {
+        zdjecieBase64 = await toBase64(fileInput.files[0]);
+      }
 
       const res = await fetch('/api/osoby', {
         method: 'POST',
-        body: formData
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imie, nazwisko, pesel, zdjecieBase64 })
       });
 
-      const result = await res.json();
-      if (result.success) {
-        e.target.reset();
-        loadOsoby();
+      const data = await res.json();
+      if (data.success) {
+        alert('✅ Wpis został pomyślnie dodany do bazy WDS_Database.');
+        document.getElementById('rejestracjaForm').reset();
+        pokazFormularz();
+        odswiezBaze();
       } else {
-        alert('BŁĄD: ' + result.message);
+        alert('❌ Błąd: ' + data.message);
       }
     });
 
-    loadOsoby();
+    odswiezBaze();
   </script>
 </body>
 </html>
